@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'unisda_strategic_plan.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'strategic_db',
+        'USER': 'root',
+        'PASSWORD': 'kapz.kapz123',
+        'HOST': 'localhost', 
+        'PORT': '3306',      
     }
 }
 
@@ -117,6 +121,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+
+#static files in root dir
+STATICFILES_DIRS = [BASE_DIR / "static"]  # ref our static folder
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
