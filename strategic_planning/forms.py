@@ -50,6 +50,7 @@ class StrategicObjectiveForm(forms.ModelForm):
         }
 
 
+
 class KPIForm(forms.ModelForm):
     class Meta:
         model = KPI
