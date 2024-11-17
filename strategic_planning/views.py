@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -7,6 +7,8 @@ from .models import (
     StrategicTheme, StrategicObjective, Department, KPI,
     Activity, Budget, Achievement, User, Role
 )
+from .forms import (StrategicThemeForm)
+
 # Create your views here.
 
 class HomeView(View):
@@ -17,6 +19,16 @@ class StrategicThemeListView(ListView):
     model = StrategicTheme
     template_name = 'strategic_theme_list.html'
     context_object_name = 'strategic_themes'
+    def create_strategic_theme(request):
+        if request.method == 'POST':
+            form = StrategicThemeForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('success_url')  # Replace with your desired URL
+        else:
+            form = StrategicThemeForm()
+
+        return render(request, 'create_strategic_theme.html', {'form': form})
 
 
 class StrategicThemeDetailView(DetailView):

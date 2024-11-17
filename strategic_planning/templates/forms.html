@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"
+  integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+<style>
+  /* Add this CSS to your style.css or in a <style> tag within your HTML */
+  .form-container {
+    border: 1px solid #dddddd;
+    padding: 20px;
+    background: rgb(237, 237, 237);
+  }
+
+
+  /* Custom styles for the button layout */
+  .row.mt-3 {
+    margin-top: 1rem !important;
+  }
+
+  .col-md-6 {
+    padding: 0.5rem;
+  }
+
+  .col-md-6.text-right {
+    text-align: right;
+  }
+
+  .card {
+    background-color: #fff;
+  }
+
+  .form__group {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .form__split {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .form__group label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+
+  .form__group input,
+  .form__group textarea,
+  .form__group select {
+    background: #fff;
+    border: 1px solid gray;
+    padding: 2px;
+    border-radius: 3px;
+    width: 100%;
+    color: black;
+    font-weight: 300;
+    outline: none;
+
+  }
+
+  .form__group input:focus,
+  .form__group textarea:focus {
+    border-color: var(--color-main);
+  }
+
+  .form__group textarea {
+    background: transparent;
+    height: 10rem;
+    resize: none;
+  }
+
+  .form__group select {
+    color: var(--color-gray);
+    font-weight: 400;
+  }
+
+  .form__group select option {
+    background-color: var(--color-dark-light);
+    color: var(--color-light);
+    padding: 0 10rem;
+  }
+
+  /*BreadCrumb styling*/
+  ul.breadcrumb {
+    margin-top: -25px;
+    list-style: none;
+  }
+
+  .breadcrumb {
+    padding-right: 12px;
+    justify-content: right;
+  }
+
+  /* Display list items side by side */
+  ul.breadcrumb li {
+    display: inline;
+    font-size: 18px;
+
+  }
+
+  /* Add a slash symbol (/) before/behind each list item */
+  ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+  }
+
+  /* Add a color to all links inside the list */
+  ul.breadcrumb li a {
+    color: #135761ea;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  /* Add a color on mouse-over */
+  ul.breadcrumb li a:hover {
+    color: #135761;
+    text-decoration: underline;
+    font-weight: 700;
+  }
+</style>
+
+<main id="main" class="main">
+  <div class="pagetitle" style="margin-left: 15px;">
+    {% if page_name == 'add_customer' %}
+    <h1>Add New Customer</h1>
+    <ul class="breadcrumb">
+      <li><a href="{% url 'home' %}">Customers</a></li>
+      <li>Add New Customer</li>
+    </ul>
+
+    {% elif page_name == 'add_products' %}
+    <h1>Add New Product</h1>
+    <ul class="breadcrumb">
+      <li><a href="{% url 'products' %}">Products</a></li>
+      <li>Add New Product</li>
+    </ul>
+
+    {% else %}
+    <h1>Create Delivery Note</h1>
+    <ul class="breadcrumb">
+      <li><a href="{% url 'deliverynotes' %}">Delivery Notes</a></li>
+      <li>Create Delivery Note</li>
+    </ul>
+    {% endif %}
+  </div>
+  <div class="main-content">
+    <div class="page-content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                {% if page_name == 'add_customer' %}
+                <form method="POST">
+                  {% csrf_token %}
+                  <div class="row">
+                    <div class="col-md-12" style="padding-top: 15px;">
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.name.id_for_label }}" style="color: #135761; margin-bottom: 10px;">Customer
+                          Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.name.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.tpin.id_for_label }}"
+                          style="color: #135761; margin-bottom: 10px;">TPIN</label>
+                        {{ form.tpin }}
+                        {% if form.tpin.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.tpin.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+
+                      <!-- Phone number input -->
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.contact.id_for_label }}" style="color: #135761; margin-bottom: 10px;">Phone
+                          Number</label>
+                        {{ form.contact }}
+                        {% if form.contact.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.contact.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+
+                      <!-- Email input -->
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.email.id_for_label }}"
+                          style="color: #135761; margin-bottom: 10px;">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.email.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.role.id_for_label }}"
+                          style="color: #135761; margin-bottom: 10px;">Address</label>
+                        {{ form.address }}
+                        {% if form.role.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.role.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+
+                      <div class="col-md-5">
+                        <button class="btn create-btns btn-save" id="submitButton" type="submit">Save</button>
+                        <a class="text-white" href="{% url 'customers' %}">
+                          <button type="button" class="btn create-btns btn-cancel">Cancel</button>
+                        </a>
+                      </div>
+
+                    </div>
+                  </div>
+                  <!-- Submit Button -->
+                </form>
+
+                {% elif page_name == 'add_products' %}
+                <form method="POST">
+                  {% csrf_token %}
+                  <div class="row">
+                    <div class="col-md-12" style="padding-top: 15px;">
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.name.id_for_label }}" style="color: #135761; margin-bottom: 10px;">Product
+                          Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.name.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.tpin.id_for_label }}"
+                          style="color: #135761; margin-bottom: 10px;">Description</label>
+                        {{ form.description }}
+                        {% if form.tpin.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.tpin.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+                      <!-- Phone number input -->
+                      <div class="col-md-5" style="margin-bottom: 25px;">
+                        <label for="{{ form.contact.id_for_label }}" style="color: #135761; margin-bottom: 10px;">Price
+                        </label>
+                        {{ form.price }}
+                        {% if form.contact.errors %}
+                        <div class="invalid-feedback">
+                          {{ form.contact.errors.as_text }}
+                        </div>
+                        {% endif %}
+                      </div>
+                      <div class="col-md-5">
+                        <button class="btn create-btns btn-save" id="submitButton" type="submit">Save</button>
+                        <a class="text-white" href="{% url 'products' %}">
+                          <button type="button" class="btn create-btns btn-cancel">Cancel</button>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Submit Button -->
+                </form>
+                {% else %}
+                <h1>Nothing here</h1>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</main><!-- End #main -->
+{% endblock content %}
