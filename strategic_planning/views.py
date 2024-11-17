@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -19,29 +19,27 @@ class StrategicThemeListView(ListView):
     model = StrategicTheme
     template_name = 'strategic_theme_list.html'
     context_object_name = 'strategic_themes'
-    def create_strategic_theme(request):
-        if request.method == 'POST':
-            form = StrategicThemeForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect('success_url')  # Replace with your desired URL
-        else:
-            form = StrategicThemeForm()
 
-        return render(request, 'create_strategic_theme.html', {'form': form})
+class StrategicThemeCreateView(CreateView):
+    model = StrategicTheme
+    form_class = StrategicThemeForm
+    page_name = 'create_strategic_theme.html'
+    success_url = reverse_lazy('strategic_theme_list')
+class StrategicThemeCreateView(CreateView):
+    model = StrategicTheme
+    form_class = StrategicThemeForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('strategic_theme_list')
 
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'strategic_theme_create'  # Set this for conditional rendering
+        return context
 class StrategicThemeDetailView(DetailView):
     model = StrategicTheme
     template_name = 'strategic_theme_detail.html'
     context_object_name = 'strategic_theme'
 
-
-class StrategicThemeCreateView(CreateView):
-    model = StrategicTheme
-    fields = ['theme_name', 'created_by']
-    template_name = 'strategic_theme_form.html'
-    success_url = reverse_lazy('strategic_theme_list')
 
 
 class StrategicThemeUpdateView(UpdateView):
