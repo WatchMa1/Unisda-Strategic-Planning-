@@ -5,9 +5,9 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import (
     StrategicTheme, StrategicObjective, Department, KPI,
-    Activity, Budget, Achievement, User, Role
+    Activity, Achievement, User, Role
 )
-from .forms import (StrategicThemeForm)
+from .forms import (KPIForm, StrategicObjectiveForm, StrategicThemeForm)
 
 # Create your views here.
 
@@ -57,7 +57,7 @@ class StrategicThemeDeleteView(DeleteView):
 #strategic objectives views 
 class StrategicObjectiveListView(ListView):
     model = StrategicObjective
-    template_name = 'strategic_objective_list.html'
+    template_name = 'strategic_objectives.html'
     context_object_name = 'strategic_objectives'
 
 
@@ -80,10 +80,14 @@ class StrategicObjectiveCreateView(CreateView):
 
 class StrategicObjectiveUpdateView(UpdateView):
     model = StrategicObjective
-    fields = ['objective_name', 'created_by', 'theme', 'department']
-    template_name = 'strategic_objective_form.html'
-    success_url = reverse_lazy('strategic_objective_list')
+    fields = ['objective_name', 'created_by', 'strategic_theme', 'department']
+    template_name = 'forms.html'
+    success_url = reverse_lazy('strategic_objectives')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'strategic_objective_update'  # Set this for conditional rendering
+        return context
 
 class StrategicObjectiveDeleteView(DeleteView):
     model = StrategicObjective
@@ -137,17 +141,26 @@ class KPIDetailView(DetailView):
 
 class KPICreateView(CreateView):
     model = KPI
-    fields = ['name', 'objective']
-    template_name = 'kpi_form.html'
+    form_class = KPIForm
+    template_name = 'forms.html'
     success_url = reverse_lazy('kpi_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'kpi_create'  # Set this for conditional rendering
+        return context
 
 
 class KPIUpdateView(UpdateView):
     model = KPI
-    fields = ['name', 'objective']
-    template_name = 'kpi_form.html'
+    form_class = KPIForm
+    template_name = 'forms.html'
     success_url = reverse_lazy('kpi_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'kpi_update'  # Set this for conditional rendering
+        return context
 
 class KPIDeleteView(DeleteView):
     model = KPI
@@ -158,7 +171,7 @@ class KPIDeleteView(DeleteView):
 # Activity Views
 class ActivityListView(ListView):
     model = Activity
-    template_name = 'activity_list.html'
+    template_name = 'activities.html'
     context_object_name = 'activities'
 
 
@@ -170,17 +183,31 @@ class ActivityDetailView(DetailView):
 
 class ActivityCreateView(CreateView):
     model = Activity
-    fields = ['name', 'objective', 'parent_activity']
-    template_name = 'activity_form.html'
+    fields = [
+            'name', 'description', 'kpi', 'parent_activity', 
+            'estimated_amount', 'actual_amount', 'created_by'
+        ]
+    template_name = 'forms.html'
     success_url = reverse_lazy('activity_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'activity_create'  # Set this for conditional rendering
+        return context
 
 class ActivityUpdateView(UpdateView):
     model = Activity
-    fields = ['name', 'objective', 'parent_activity']
-    template_name = 'activity_form.html'
+    fields = [
+            'name', 'description', 'kpi', 'parent_activity', 
+            'estimated_amount', 'actual_amount', 'created_by'
+        ]
+    template_name = 'forms.html'
     success_url = reverse_lazy('activity_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'activity_update'  # Set this for conditional rendering
+        return context
 
 class ActivityDeleteView(DeleteView):
     model = Activity

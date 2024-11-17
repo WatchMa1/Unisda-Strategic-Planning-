@@ -16,7 +16,7 @@ urlpatterns = [
     path('strategic-themes/<int:pk>/update/', StrategicThemeUpdateView.as_view(), name='strategic_theme_update'),
     path('strategic-themes/<int:pk>/delete/', StrategicThemeDeleteView.as_view(), name='strategic_theme_delete'),
     
-    path('strategic-objectives/', StrategicObjectiveListView.as_view(), name='strategic_objective_list'),
+    path('strategic-objectives/', StrategicObjectiveListView.as_view(), name='strategic_objectives'),
     path('strategic-objectives/<int:pk>/', StrategicObjectiveDetailView.as_view(), name='strategic_objective_detail'),
     path('strategic-objectives/create/', StrategicObjectiveCreateView.as_view(), name='strategic_objective_create'),
     path('strategic-objectives/<int:pk>/update/', StrategicObjectiveUpdateView.as_view(), name='strategic_objective_update'),

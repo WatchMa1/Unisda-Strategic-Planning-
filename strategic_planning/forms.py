@@ -1,7 +1,7 @@
 from django import forms
 from .models import (
     User, Department, StrategicTheme, StrategicObjective, KPI, 
-    Activity, Budget, Achievement, Role, Report
+    Activity, Achievement, Role, Report
 )
 
 class UserForm(forms.ModelForm):
@@ -43,28 +43,94 @@ class StrategicObjectiveForm(forms.ModelForm):
             'created_by': 'Created By',
         }
         widgets = {
-            'objective_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Objective'}),
-            'strategic_theme': forms.Select(attrs={'class': 'form-control'}),
-            'department': forms.Select(attrs={'class': 'form-control'}),
-            'created_by': forms.Select(attrs={'class': 'form-control'}),
+            'objective_name': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter Objective'}),
+            'strategic_theme': forms.Select(attrs={
+                'class': 'form-control'
+                }),
+            'department': forms.Select(attrs={
+                'class': 'form-control'
+                }),
+            'created_by': forms.Select(attrs={
+                'class': 'form-control'
+                }),
         }
 
 
+
+from django import forms
+from .models import KPI
 
 class KPIForm(forms.ModelForm):
     class Meta:
         model = KPI
         fields = ['name', 'strategic_objective', 'created_by']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter KPI Name'
+            }),
+            'strategic_objective': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'created_by': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+        }
+        labels = {
+            'name': 'KPI Name',
+            'strategic_objective': 'Strategic Objective',
+            'created_by': 'Created By',
+        }
+
 
 class ActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
-        fields = ['name', 'kpi', 'parent_activity', 'created_by']
+        fields = [
+            'name', 'description', 'kpi', 'parent_activity', 
+            'estimated_amount', 'actual_amount', 'created_by'
+        ]
+        labels = {
+            'name': 'Activity Name',
+            'description': 'Activity Description',
+            'kpi': 'Associated KPI',
+            'parent_activity': 'Parent Activity (if any)',
+            'estimated_amount': 'Estimated Budget Amount',
+            'actual_amount': 'Actual Amount (Optional)',
+            'created_by': 'Created By',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter the activity name',
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter activity details',
+                'rows': 4,
+            }),
+            'kpi': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'parent_activity': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'estimated_amount': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter the estimated budget',
+            }),
+            'actual_amount': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter the actual amount spent (if applicable)',
+            }),
+            'created_by': forms.TextInput(attrs={
+                'class': 'form-control'
+                
+            }),
+        }
 
-class BudgetForm(forms.ModelForm):
-    class Meta:
-        model = Budget
-        fields = ['estimated_amount', 'actual_amount', 'activity']
 
 class AchievementForm(forms.ModelForm):
     class Meta:

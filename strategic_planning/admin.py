@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StrategicTheme, StrategicObjective, Department, KPI, Activity, Achievement, User, Role, Report, Budget
+from .models import StrategicTheme, StrategicObjective, Department, KPI, Activity, Achievement, User, Role, Report
 
 # Register each model with the admin site
 admin.site.register(StrategicTheme)
@@ -11,4 +11,3 @@ admin.site.register(Achievement)
 admin.site.register(User)
 admin.site.register(Role)
 admin.site.register(Report)
-admin.site.register(Budget)

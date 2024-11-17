@@ -30,13 +30,41 @@
             <li>Create Strategic objective</li>
         </ul>
 
-        {% elif page_name == 'add_products' %}
-        <h1>Add New Product</h1>
+        {% elif page_name == 'strategic_objective_update' %}
+        <h1>Update Strategic Objective</h1>
         <ul class="breadcrumb">
-            <li><a href="{% url 'products' %}">Products</a></li>
-            <li>Add New Product</li>
+            <li><a href="{% url 'home' %}">Strategic Objective</a></li>
+            <li>Update Strategic objective</li>
         </ul>
 
+        {% elif page_name == 'kpi_create' %}
+        <h1>Create Kpi</h1>
+        <ul class="breadcrumb">
+            <li><a href="{% url 'kpi_list' %}">Kpi</a></li>
+            <li>Create Kpi</li>
+        </ul>
+
+        {% elif page_name == 'kpi_update' %}
+        <h1>Update Kpi</h1>
+        <ul class="breadcrumb">
+            <li><a href="{% url 'kpi_list' %}">Kpi</a></li>
+            <li>update Kpi</li>
+        </ul>
+
+        {% elif page_name == 'activity_create' %}
+        <h1>Add Activity</h1>
+        <ul class="breadcrumb">
+            <li><a href="{% url 'activity_list' %}">Activities</a></li>
+            <li>Add Activity</li>
+        </ul>
+        
+        {% elif page_name == 'activity_update' %}
+        <h1>Update Activity</h1>
+        <ul class="breadcrumb">
+            <li><a href="{% url 'activity_list' %}">Activities</a></li>
+            <li>Update Activity</li>
+        </ul>
+        
         {% else %}
         <h1>Create Delivery Note</h1>
         <ul class="breadcrumb">
@@ -113,135 +141,247 @@
                                         </div>
 
                                     </div>
-                            </form>
+                                </form>
 
-                            {% elif page_name == 'strategic_objective_create' or page_name == 'strategic_objective_update' %}
-                            <form method="POST">
-                                {% csrf_token %}
-                                <div class="row">
-                                    <div class="col-8">
-                                        <!-- Objective Name -->
-                                        <div class="form-group">
-                                            <div class="d-flex">
-                                                <label for="{{ form.objective_name.id_for_label }}" class="form-label box">
-                                                    {{ form.objective_name.label }}:
-                                                </label>
-                                                {{ form.objective_name }}
+                                {% elif page_name == 'strategic_objective_create' or page_name ==
+                                'strategic_objective_update' %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <!-- Objective Name -->
+                                            <div class="form-group">
+                                                <div class="d-flex">
+                                                    <label for="{{ form.objective_name.id_for_label }}"
+                                                        class="form-label box">
+                                                        {{ form.objective_name.label }}:
+                                                    </label>
+                                                    {{ form.objective_name }}
+
+                                                </div>
+                                                {% if form.objective_name.errors %}
+                                                <div class="text-danger">
+                                                    {{ form.objective_name.errors.as_text }}
+                                                </div>
+                                                {% endif %}
                                             </div>
-                                            {% if form.objective_name.errors %}
-                                            <div class="text-danger">
-                                                {{ form.objective_name.errors.as_text }}
+
+                                            <!-- Strategic Theme -->
+                                            <div class="form-group mt-3">
+                                                <div class="d-flex">
+                                                    <label for="{{ form.strategic_theme.id_for_label }}"
+                                                        class="form-label box">
+                                                        {{ form.strategic_theme.label }}:
+                                                    </label>
+                                                    {{ form.strategic_theme }}
+                                                </div>
+                                                {% if form.strategic_theme.errors %}
+                                                <div class="text-danger">
+                                                    {{ form.strategic_theme.errors.as_text }}
+                                                </div>
+                                                {% endif %}
                                             </div>
-                                            {% endif %}
+
+                                            <!-- Department -->
+                                            <div class="form-group mt-3">
+                                                <div class="d-flex">
+                                                    <label for="{{ form.department.id_for_label }}"
+                                                        class="form-label box">
+                                                        {{ form.department.label }}:
+                                                    </label>
+                                                    {{ form.department }}
+                                                </div>
+                                                {% if form.department.errors %}
+                                                <div class="text-danger">
+                                                    {{ form.department.errors.as_text }}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Created By -->
+                                            <div class="form-group mt-3">
+                                                <div class="d-flex">
+                                                    <label for="{{ form.created_by.id_for_label }}"
+                                                        class="form-label box ">Created By:</label>
+                                                    {{ form.created_by }}
+                                                </div>
+                                                {% if form.created_by.errors %}
+                                                <div class="text-danger">
+                                                    {{ form.created_by.errors.as_text }}
+                                                </div>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                            
-                                        <!-- Strategic Theme -->
-                                        <div class="form-group mt-3">
-                                            <div class="d-flex">
-                                                <label for="{{ form.strategic_theme.id_for_label }}" class="form-label box">
-                                                    {{ form.strategic_theme.label }}:
-                                                </label>
-                                                {{ form.strategic_theme }}
+                                        <div class="col-4">
+                                            <div class="">
+                                                <button type="submit" class="btn btn-success w-100">Save</button>
                                             </div>
-                                            {% if form.strategic_theme.errors %}
-                                            <div class="text-danger">
-                                                {{ form.strategic_theme.errors.as_text }}
+                                            <div class="mt-3">
+                                                <button type="" class="btn btn-green w-100">Save and
+                                                    add</button>
                                             </div>
-                                            {% endif %}
-                                        </div>
-                            
-                                        <!-- Department -->
-                                        <div class="form-group mt-3">
-                                            <div class="d-flex">
-                                                <label for="{{ form.department.id_for_label }}" class="form-label box">
-                                                    {{ form.department.label }}:
-                                                </label>
-                                                {{ form.department }}
+                                            <div class="mt-3">
+                                                <button type="cancel" class="btn btn-danger w-100">Cancel</button>
                                             </div>
-                                            {% if form.department.errors %}
-                                            <div class="text-danger">
-                                                {{ form.department.errors.as_text }}
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                            
-                                        <!-- Created By -->
-                                        <div class="form-group mt-3">
-                                            <div class="d-flex">
-                                                <label for="{{ form.created_by.id_for_label }}" class="form-label box">
-                                                    {{ form.created_by.label }}:
-                                                </label>
-                                                {{ form.created_by }}
-                                            </div>
-                                            {% if form.created_by.errors %}
-                                            <div class="text-danger">
-                                                {{ form.created_by.errors.as_text }}
-                                            </div>
-                                            {% endif %}
                                         </div>
                                     </div>
-                                </div>
-                            </form>
-                            
+                                </form>
 
-                            {% elif page_name == 'add_products' %}
-                            <form method="POST">
-                                {% csrf_token %}
-                                <div class="row">
-                                    <div class="col-md-12" style="padding-top: 15px;">
-                                        <div class="col-md-5" style="margin-bottom: 25px;">
-                                            <label for="{{ form.name.id_for_label }}"
-                                                style="color: #135761; margin-bottom: 10px;">Product
-                                                Name</label>
-                                            {{ form.name }}
-                                            {% if form.name.errors %}
-                                            <div class="invalid-feedback">
-                                                {{ form.name.errors.as_text }}
+                                {% elif page_name == 'kpi_create' or page_name == 'kpi_update' %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <!-- KPI Name -->
+                                            <div class="form-group">
+                                                <div class="d-flex">
+                                                    <label for="{{ form.name.id_for_label }}" class="form-label box">
+                                                        {{ form.name.label }}:
+                                                    </label>
+                                                    {{ form.name }}
+                                                </div>
+                                                {% if form.name.errors %}
+                                                <div class="text-danger">
+                                                    {{ form.name.errors.as_text }}
+                                                </div>
+                                                {% endif %}
                                             </div>
-                                            {% endif %}
-                                        </div>
-                                        <div class="col-md-5" style="margin-bottom: 25px;">
-                                            <label for="{{ form.tpin.id_for_label }}"
-                                                style="color: #135761; margin-bottom: 10px;">Description</label>
-                                            {{ form.description }}
-                                            {% if form.tpin.errors %}
-                                            <div class="invalid-feedback">
-                                                {{ form.tpin.errors.as_text }}
+
+                                            <!-- Strategic Objective -->
+                                            <div class="form-group mt-3">
+                                                <div class="d-flex">
+                                                    <label for="{{ form.strategic_objective.id_for_label }}"
+                                                        class="form-label box">
+                                                        {{ form.strategic_objective.label }}:
+                                                    </label>
+                                                    {{ form.strategic_objective }}
+                                                </div>
+                                                {% if form.strategic_objective.errors %}
+                                                <div class="text-danger">
+                                                    {{ form.strategic_objective.errors.as_text }}
+                                                </div>
+                                                {% endif %}
                                             </div>
-                                            {% endif %}
-                                        </div>
-                                        <!-- Phone number input -->
-                                        <div class="col-md-5" style="margin-bottom: 25px;">
-                                            <label for="{{ form.contact.id_for_label }}"
-                                                style="color: #135761; margin-bottom: 10px;">Price
-                                            </label>
-                                            {{ form.price }}
-                                            {% if form.contact.errors %}
-                                            <div class="invalid-feedback">
-                                                {{ form.contact.errors.as_text }}
+
+                                            <!-- Created By -->
+                                            <div class="form-group mt-3">
+                                                <div class="d-flex">
+                                                    <label for="{{ form.created_by.id_for_label }}"
+                                                        class="form-label box">
+                                                        {{ form.created_by.label }}:
+                                                    </label>
+                                                    {{ form.created_by }}
+                                                </div>
+                                                {% if form.created_by.errors %}
+                                                <div class="text-danger">
+                                                    {{ form.created_by.errors.as_text }}
+                                                </div>
+                                                {% endif %}
                                             </div>
-                                            {% endif %}
                                         </div>
-                                        <div class="col-md-5">
-                                            <button class="btn create-btns btn-save" id="submitButton"
-                                                type="submit">Save</button>
-                                            <a class="text-white" href="{% url 'products' %}">
-                                                <button type="button" class="btn create-btns btn-cancel">Cancel</button>
-                                            </a>
+                                        <div class="col-4">
+                                            <div>
+                                                <button type="submit" class="btn btn-success w-100">Save</button>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button type="submit" class="btn btn-green w-100">Save and Add</button>
+                                            </div>
+                                            <div class="mt-3">
+                                                <a href="{% url 'kpi_list' %}" class="btn btn-danger w-100">Cancel</a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- Submit Button -->
-                            </form>
-                            {% else %}
-                            <h1>Nothing here</h1>
-                            {% endif %}
+
+                                </form>
+
+                                {% elif page_name == 'activity_create' or page_name == 'activity_update' %}
+                                <form method="post" class="form">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-3">
+                                        <label for="id_name" class="form-label">Activity Name</label>
+                                        {{ form.name }}
+                                        {% if form.name.errors %}
+                                        <div class="text-danger">
+                                            {{ form.name.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="form-group mb-3">
+                                        <label for="id_description" class="form-label">Activity Description</label>
+                                        {{ form.description }}
+                                        {% if form.description.errors %}
+                                        <div class="text-danger">
+                                            {{ form.description.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="form-group mb-3">
+                                        <label for="id_kpi" class="form-label">Associated KPI</label>
+                                        {{ form.kpi }}
+                                        {% if form.kpi.errors %}
+                                        <div class="text-danger">
+                                            {{ form.kpi.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="form-group mb-3">
+                                        <label for="id_parent_activity" class="form-label">Parent Activity (if any)</label>
+                                        {{ form.parent_activity }}
+                                        {% if form.parent_activity.errors %}
+                                        <div class="text-danger">
+                                            {{ form.parent_activity.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="form-group mb-3">
+                                        <label for="id_estimated_amount" class="form-label">Estimated Budget Amount</label>
+                                        {{ form.estimated_amount }}
+                                        {% if form.estimated_amount.errors %}
+                                        <div class="text-danger">
+                                            {{ form.estimated_amount.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="form-group mb-3">
+                                        <label for="id_actual_amount" class="form-label">Actual Amount (Optional)</label>
+                                        {{ form.actual_amount }}
+                                        {% if form.actual_amount.errors %}
+                                        <div class="text-danger">
+                                            {{ form.actual_amount.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="form-group mb-3">
+                                        <label for="id_created_by" class="form-label">Created By</label>
+                                        {{ form.created_by }}
+                                        {% if form.created_by.errors %}
+                                        <div class="text-danger">
+                                            {{ form.created_by.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <a href="{% url 'activity_list' %}" class="btn btn-secondary">Cancel</a>
+                                        <button type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </form>
+
+                                {% else %}
+                                <h1>Nothing here</h1>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
     </div>
 </main><!-- End #main -->

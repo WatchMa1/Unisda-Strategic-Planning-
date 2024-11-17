@@ -53,7 +53,7 @@ class StrategicObjective(models.Model):
     objective_name = models.CharField(max_length=200)
     strategic_theme = models.ForeignKey(StrategicTheme, on_delete=models.CASCADE, related_name="objectives")
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="objectives")
-
+    
     def __str__(self):
         return self.objective_name
 
@@ -70,16 +70,15 @@ class Activity(models.Model):
     date_created = models.DateTimeField(default=now)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
+    description = models.TextField()
     kpi = models.ForeignKey(KPI, on_delete=models.CASCADE, related_name="activities")
     parent_activity = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name="sub_activities")
-
+    estimated_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    actual_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    
     def __str__(self):
         return self.name
 
-class Budget(models.Model):
-    estimated_amount = models.DecimalField(max_digits=12, decimal_places=2)
-    actual_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    activity = models.OneToOneField(Activity, on_delete=models.CASCADE, related_name="budget")
 
 class Achievement(models.Model):
     goal_score = models.CharField(max_length=10, choices=GoalScoreEnum.choices)
