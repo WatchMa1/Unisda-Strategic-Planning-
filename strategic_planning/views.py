@@ -11,7 +11,7 @@ from .models import (
 
 class HomeView(View):
     def get(self, request):
-        return HttpResponse("Hello Work")
+        return render(request, 'home.html')
 
 class StrategicThemeListView(ListView):
     model = StrategicTheme

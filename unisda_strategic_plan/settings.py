@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,7 +56,9 @@ ROOT_URLCONF = 'unisda_strategic_plan.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',  # ref our templates folder
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,7 +80,7 @@ WSGI_APPLICATION = 'unisda_strategic_plan.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'strategic_db',
+        'NAME': 'sp_db',
         'USER': 'root',
         'PASSWORD': 'kapz.kapz123',
         'HOST': 'localhost', 
@@ -85,6 +88,43 @@ DATABASES = {
     }
 }
 
+JAZZMIN_SETTINGS = {
+    "site_title": "Unisda Strategic Plan Admin",
+    "site_header": "Unisda Admin",
+    "site_brand": "Unisda",
+    "site_logo": "img/logo.png",  # Replace with your static logo path
+    "login_logo": None,
+    "welcome_sign": "Welcome to the Unisda Strategic Plan Admin Dashboard",
+    "copyright": "Unisda",
+    "search_model": "auth.User",  # Enable search for specific models
+    "user_avatar": None,  # User avatar field in your user model
+
+    # Custom top menu links
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"app": "strategic_planning"},  # Link to your app
+    ],
+
+    # Custom side menu
+    "usermenu_links": [
+        {"name": "Support", "url": "https://support.example.com", "new_window": True},
+        {"model": "auth.user"},
+    ],
+
+    # Additional options
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": True,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -120,13 +160,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 
 #static files in root dir
 STATICFILES_DIRS = [BASE_DIR / "static"]  # ref our static folder
+STATIC_ROOT = BASE_DIR / 'staticfiles' 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
