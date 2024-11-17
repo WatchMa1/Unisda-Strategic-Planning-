@@ -10,7 +10,7 @@ from .views import (
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
-    path('strategic-themes/', StrategicThemeListView.as_view(), name='strategic_theme_list'),
+    path('strategic-themes/', StrategicThemeListView.as_view(), name='strategic_themes'),
     path('strategic-themes/<int:pk>/', StrategicThemeDetailView.as_view(), name='strategic_theme_detail'),
     path('strategic-themes/create/', StrategicThemeCreateView.as_view(), name='strategic_theme_create'),
     path('strategic-themes/<int:pk>/update/', StrategicThemeUpdateView.as_view(), name='strategic_theme_update'),

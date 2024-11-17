@@ -17,36 +17,35 @@ class HomeView(View):
 
 class StrategicThemeListView(ListView):
     model = StrategicTheme
-    template_name = 'strategic_theme_list.html'
+    template_name = 'strategic_themes.html'
     context_object_name = 'strategic_themes'
 
 class StrategicThemeCreateView(CreateView):
     model = StrategicTheme
     form_class = StrategicThemeForm
-    page_name = 'create_strategic_theme.html'
-    success_url = reverse_lazy('strategic_theme_list')
-class StrategicThemeCreateView(CreateView):
-    model = StrategicTheme
-    form_class = StrategicThemeForm
     template_name = 'forms.html'
-    success_url = reverse_lazy('strategic_theme_list')
-
+    success_url = reverse_lazy('strategic_themes')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'strategic_theme_create'  # Set this for conditional rendering
         return context
+    
 class StrategicThemeDetailView(DetailView):
     model = StrategicTheme
     template_name = 'strategic_theme_detail.html'
     context_object_name = 'strategic_theme'
 
 
-
 class StrategicThemeUpdateView(UpdateView):
     model = StrategicTheme
-    fields = ['theme_name', 'created_by']
-    template_name = 'strategic_theme_form.html'
-    success_url = reverse_lazy('strategic_theme_list')
+    form_class = StrategicThemeForm
+    template_name = 'forms.html'  # Your form template
+    success_url = reverse_lazy('strategic_themes')  # Redirect after saving
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'strategic_theme_update'
+        return context
 
 
 class StrategicThemeDeleteView(DeleteView):
@@ -70,10 +69,14 @@ class StrategicObjectiveDetailView(DetailView):
 
 class StrategicObjectiveCreateView(CreateView):
     model = StrategicObjective
-    fields = ['objective_name', 'created_by', 'theme', 'department']
-    template_name = 'strategic_objective_form.html'
+    fields = ['objective_name', 'created_by', 'strategic_theme', 'department']
+    template_name = 'forms.html'
     success_url = reverse_lazy('strategic_objective_list')
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'strategic_objective_create'  # Set this for conditional rendering
+        return context
 
 class StrategicObjectiveUpdateView(UpdateView):
     model = StrategicObjective

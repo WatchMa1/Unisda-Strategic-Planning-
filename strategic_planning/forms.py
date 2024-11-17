@@ -21,11 +21,34 @@ class StrategicThemeForm(forms.ModelForm):
     class Meta:
         model = StrategicTheme
         fields = ['theme_name', 'description', 'created_by']
+        labels = {
+            'theme_name': 'Theme Name',
+            'description': 'Description',
+            'created_by': 'Created By',
+        }
+        widgets = {
+            'theme_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter theme name'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter description'}),
+            'created_by': forms.Select(attrs={'class': 'form-control'}),
+        }
 
 class StrategicObjectiveForm(forms.ModelForm):
     class Meta:
         model = StrategicObjective
         fields = ['objective_name', 'strategic_theme', 'department', 'created_by']
+        labels = {
+            'objective_name': 'Objective',
+            'strategic_theme': 'Strategic Theme',
+            'department': 'Department',
+            'created_by': 'Created By',
+        }
+        widgets = {
+            'objective_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Objective'}),
+            'strategic_theme': forms.Select(attrs={'class': 'form-control'}),
+            'department': forms.Select(attrs={'class': 'form-control'}),
+            'created_by': forms.Select(attrs={'class': 'form-control'}),
+        }
+
 
 class KPIForm(forms.ModelForm):
     class Meta:
