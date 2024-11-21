@@ -69,6 +69,7 @@
                             </i> Reports </a>
                     </li>
                     <li>
+                        {% if "Admin" in roles %}
                         <a href=""><i class="material-icons-two-tone">star</i>Admin<i
                                 class="material-icons has-sub-menu">keyboard_arrow_right</i></a>
                         <ul class="sub-menu">
@@ -85,18 +86,19 @@
                                 <a href="{% url 'activity_list' %}">Activities</a>
                             </li>
                             <li>
-                                <a href="error.html">Budget</a>
+                                <a href="{% url 'achievement_list' %}">Achievements</a>
                             </li>
                             <li>
-                                <a href="error.html">Achievements</a>
+                                <a href="{% url 'designation_list' %}">Designation</a>
                             </li>
                             <li>
-                                <a href="error.html">Departments</a>
+                                <a href="{% url 'role_list' %}">Assign Roles</a>
                             </li>
                             <li>
-                                <a href="error.html">Assign Roles</a>
+                                <a href="{% url 'user_list' %}">Users</a>
                             </li>
                         </ul>
+                        {% endif %}
                     </li>
                 </ul>
             </div>

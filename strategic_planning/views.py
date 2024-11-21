@@ -1,15 +1,44 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import View
-from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import (
-    StrategicTheme, StrategicObjective, Department, KPI,
+    MainActivity, Report, StrategicTheme, StrategicObjective, Designation, KPI,
     Activity, Achievement, User, Role
 )
-from .forms import (KPIForm, StrategicObjectiveForm, StrategicThemeForm)
+from .forms import (AchievementForm, ActivityForm, KPIForm, LoginForm, MainActivityForm, StrategicObjectiveForm, StrategicThemeForm, ReportForm, UserForm, RoleForm, DesignationForm, )
+from django.views.generic import TemplateView
 
 # Create your views here.
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.core.exceptions import PermissionDenied
+
+class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
+    required_role = None  # Set the required role in the view
+    required_designation = None  # Set the required designation in the view
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the user is authenticated (handled by LoginRequiredMixin)
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        # Check for the required role
+        if self.required_role and (not request.user.role or request.user.role.name != self.required_role):
+            raise PermissionDenied("You do not have the required role to access this page.")
+
+        # Check for the required designation
+        if self.required_designation and (
+            not request.user.designation or request.user.designation.name != self.required_designation
+        ):
+            raise PermissionDenied("You do not have the required designation to access this page.")
+
+        return super().dispatch(request, *args, **kwargs)
+
 
 class HomeView(View):
     def get(self, request):
@@ -67,9 +96,10 @@ class StrategicObjectiveDetailView(DetailView):
     context_object_name = 'strategic_objective'
 
 
-class StrategicObjectiveCreateView(CreateView):
+class StrategicObjectiveCreateView(RoleAndDesignationRequiredMixin, TemplateView):
     model = StrategicObjective
-    fields = ['objective_name', 'created_by', 'strategic_theme', 'department']
+    required_designation = 'Technical'
+    form_class = StrategicObjectiveForm
     template_name = 'forms.html'
     success_url = reverse_lazy('strategic_objective_list')
     
@@ -80,7 +110,7 @@ class StrategicObjectiveCreateView(CreateView):
 
 class StrategicObjectiveUpdateView(UpdateView):
     model = StrategicObjective
-    fields = ['objective_name', 'created_by', 'strategic_theme', 'department']
+    form_class = StrategicObjectiveForm
     template_name = 'forms.html'
     success_url = reverse_lazy('strategic_objectives')
 
@@ -94,37 +124,11 @@ class StrategicObjectiveDeleteView(DeleteView):
     template_name = 'strategic_objective_confirm_delete.html'
     success_url = reverse_lazy('strategic_objective_list')
 
-# Department Views
-class DepartmentListView(ListView):
-    model = Department
-    template_name = 'department_list.html'
-    context_object_name = 'departments'
 
-
-class DepartmentDetailView(DetailView):
-    model = Department
-    template_name = 'department_detail.html'
-    context_object_name = 'department'
-
-
-class DepartmentCreateView(CreateView):
-    model = Department
-    fields = ['name', 'created_by']
-    template_name = 'department_form.html'
-    success_url = reverse_lazy('department_list')
-
-
-class DepartmentUpdateView(UpdateView):
-    model = Department
-    fields = ['name', 'created_by']
-    template_name = 'department_form.html'
-    success_url = reverse_lazy('department_list')
-
-
-class DepartmentDeleteView(DeleteView):
-    model = Department
-    template_name = 'department_confirm_delete.html'
-    success_url = reverse_lazy('department_list')
+class DesignationDeleteView(DeleteView):
+    model = Designation
+    template_name = 'designation_confirm_delete.html'
+    success_url = reverse_lazy('designation_list')
 
 #KPI Views
 class KPIListView(ListView):
@@ -167,7 +171,31 @@ class KPIDeleteView(DeleteView):
     template_name = 'kpi_confirm_delete.html'
     success_url = reverse_lazy('kpi_list')
 
+class MainActivityCreateView(CreateView):
+    model = MainActivity
+    form_class = MainActivityForm
+    template_name = 'planning.html'
+    success_url = reverse_lazy('activities')  # Replace with your success URL
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'main_activity_create'  # Set this for conditional rendering
+        return context
+    
+    
+class MainActivityUpdateView(UpdateView):
+    model = MainActivity
+    form_class = MainActivityForm
+    template_name = 'planning.html'
+    success_url = reverse_lazy('activities')  # Replace with your success URL
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'main_activity_update'  # Set this for conditional rendering
+        return context
+    
+    
+    
 # Activity Views
 class ActivityListView(ListView):
     model = Activity
@@ -183,10 +211,7 @@ class ActivityDetailView(DetailView):
 
 class ActivityCreateView(CreateView):
     model = Activity
-    fields = [
-            'name', 'description', 'kpi', 'parent_activity', 
-            'estimated_amount', 'actual_amount', 'created_by'
-        ]
+    form_class = ActivityForm
     template_name = 'forms.html'
     success_url = reverse_lazy('activity_list')
 
@@ -194,13 +219,15 @@ class ActivityCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'activity_create'  # Set this for conditional rendering
         return context
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user  # Set the logged-in user
+        return super().form_valid(form)
+    
 
 class ActivityUpdateView(UpdateView):
     model = Activity
-    fields = [
-            'name', 'description', 'kpi', 'parent_activity', 
-            'estimated_amount', 'actual_amount', 'created_by'
-        ]
+    form_class = ActivityForm
     template_name = 'forms.html'
     success_url = reverse_lazy('activity_list')
 
@@ -208,8 +235,242 @@ class ActivityUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'activity_update'  # Set this for conditional rendering
         return context
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user  # Set the logged-in user
+        return super().form_valid(form)
+    
 
 class ActivityDeleteView(DeleteView):
     model = Activity
     template_name = 'activity_confirm_delete.html'
     success_url = reverse_lazy('activity_list')
+
+
+
+# Activity Views
+class AchievementListView(ListView):
+    model = Achievement
+    template_name = 'achievements.html'
+    context_object_name = 'activities'
+
+
+class AchievementDetailView(DetailView):
+    model = Achievement
+    template_name = 'Achievement_detail.html'
+    context_object_name = 'Achievement'
+
+
+class AchievementCreateView(CreateView):
+    model = Achievement
+    form_class = AchievementForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('achievement_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'achievement_create'  # Set this for conditional rendering
+        return context
+
+class AchievementUpdateView(UpdateView):
+    model = Achievement
+    form_class = AchievementForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('achievement_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'achievement_update'  # Set this for conditional rendering
+        return context
+
+class AchievementDeleteView(DeleteView):
+    model = Achievement
+    template_name = 'Achievement_confirm_delete.html'
+    success_url = reverse_lazy('Achievement_list')
+    
+class DesignationListView(ListView):
+    model = Designation
+    template_name = 'designations.html'
+    context_object_name = 'designations'
+
+
+class DesignationDetailView(DetailView):
+    model = Designation
+    template_name = 'designation_detail.html'
+    context_object_name = 'designation'
+
+
+class DesignationCreateView(CreateView):
+    model = Designation
+    form_class = DesignationForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('designation_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'designation_create'  # Set this for conditional rendering
+        return context
+
+
+class DesignationUpdateView(UpdateView):
+    model = Designation
+    form_class = DesignationForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('designation_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'designation_update'  # Set this for conditional rendering
+        return context
+
+class ReportListView(ListView):
+    model = Report
+    template_name = 'reports.html'
+    context_object_name = 'reports'
+
+
+class ReportDetailView(DetailView):
+    model = Report
+    template_name = 'report_detail.html'
+    context_object_name = 'report'
+
+
+class ReportCreateView(CreateView):
+    model = Report
+    form_class = ReportForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('report_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'report_create'  # Set this for conditional rendering
+        return context
+
+
+class ReportUpdateView(UpdateView):
+    model = Report
+    form_class = ReportForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('report_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'report_update'  # Set this for conditional rendering
+        return context
+
+class RoleListView(ListView):
+    model = Role
+    template_name = 'roles.html'
+    context_object_name = 'roles'
+
+
+class RoleDetailView(DetailView):
+    model = Role
+    template_name = 'role_detail.html'
+    context_object_name = 'role'
+
+
+class RoleCreateView(RoleAndDesignationRequiredMixin, TemplateView):
+    model = Role
+    required_designation = "Technical"
+    form_class = RoleForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('role_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'role_create'  # Set this for conditional rendering
+        return context
+
+class RoleUpdateView(UpdateView):
+    model = Role
+    form_class = RoleForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('role_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'role_update'  # Set this for conditional rendering
+        return context
+
+class UserListView(ListView):
+    model = User
+    template_name = 'users.html'
+    context_object_name = 'users'  # Pass the users to the template
+
+
+class UserCreateView(CreateView):
+    model = User
+    form_class = UserForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('user_list')  # Redirect to the user list after creation
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'user_create'  # Set this for conditional rendering
+        return context
+    
+    def form_valid(self, form):
+        """
+        Hash the password before saving the user.
+        """
+        user = form.save(commit=False)
+        if user.password:  # Hash password before saving
+            user.set_password(form.cleaned_data['password'])
+        user.save()
+        return super().form_valid(form)
+
+class UserUpdateView(UpdateView):
+    model = User
+    form_class = UserForm
+    template_name = 'forms.html'
+    success_url = reverse_lazy('user_list')  # Redirect to the user list after update
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'user_update'  # Set this for conditional rendering
+        return context
+    
+    def form_valid(self, form):
+        """
+        Hash the password before saving the user.
+        """
+        user = form.save(commit=False)
+        if user.password:  # Hash password before saving
+            user.set_password(form.cleaned_data['password'])
+        user.save()
+        return super().form_valid(form)
+
+class LoginView(View):
+    template_name = "login.html"
+
+    def get(self, request):
+        form = LoginForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            print("Form is valid")
+            username = form.cleaned_data["username"]  # This now represents email
+            password = form.cleaned_data["password"]
+            print(f"Trying to authenticate user with email: {username}")
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                print("Authentication successful!")
+                login(request, user)
+                return redirect("home")
+            else:
+                messages.error(request, "Invalid credentials")
+        else:
+            messages.error(request, "Please correct the errors below.")
+        return render(request, self.template_name, {"form": form})
+
+def permission_denied(request, exception=None):
+    return render(request, "403.html", status=403)
+
+def dashboard(request):
+    roles = request.user.groups.values_list('name', flat=True) if request.user.groups.exists() else []
+    context = {
+        'roles': roles
+    }
+    return render(request, 'home.html', context)

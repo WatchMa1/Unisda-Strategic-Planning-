@@ -8,19 +8,20 @@
             <div class="example-content bg-light">
                 <div class="section-description d-flex align-items-center">
                     <div class="section-description-content flex-grow-1">
-                        <h1 class="">Strategic Objectives</h1>
+                        <h1 class="">Achievement List</h1>
                     </div>
                     <div class="section-description-actions">
                         <a href="#" class="btn btn-dark">
-                            <i class="material-icons-outlined">file_download</i> Download
+                            <i class="material-icons-outlined">file_download</i>Download
                         </a>
-                        <a href="{% url 'strategic_objective_create' %}" class="btn btn-green">
-                            <i class="material-icons">add</i> Create
+                        <a href="{% url 'achievement_create' %}" class="btn btn-green">
+                            <i class="material-icons">add</i>Create Achievement
                         </a>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="table-responsive mt-5 p-0">
             <table id="result_list" class="table table-striped">
                 <thead>
@@ -35,51 +36,63 @@
                             </div>
                         </th>
 
-                        <!-- Table Header for Objective Name -->
+                        <!-- Table Header for Goal Score -->
                         <th class="sorting text-green" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Objective Name</h5>
+                            <h5 class="text text-green">Goal Score</h5>
                         </th>
 
-                        <!-- Table Header for Strategic Theme -->
+                        <!-- Table Header for Color Code -->
                         <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Strategic Theme</h5>
+                            <h5 class="text text-green">Status Code</h5>
                         </th>
 
-                        <!-- Table Header for Designation -->
+                        <!-- Table Header for Explanation -->
                         <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Designation</h5>
+                            <h5 class="text text-green">Explanation</h5>
+                        </th>
+
+                        <!-- Table Header for Activity -->
+                        <th class="sorting" tabindex="0" rowspan="1" colspan="1">
+                            <h5 class="text text-green">Associated Activity</h5>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for objective in strategic_objectives %}
+                    {% for achievement in achievements %}
                     <tr role="row" class="{% cycle 'even' 'odd' %}">
                         <!-- Checkbox for each row -->
                         <td class="action-checkbox">
-                            <input type="checkbox" name="_selected_action" value="{{ objective.id }}"
+                            <input type="checkbox" name="_selected_action" value="{{ achievement.id }}"
                                 class="action-select"
-                                aria-label="Select this object for an action - {{ objective.objective_name }}">
+                                aria-label="Select this object for an action - Achievement {{ achievement.id }}">
                         </td>
 
-                        <!-- Objective Name -->
+                        <!-- Goal Score -->
                         <th class="field-__str__">
-                            <a class="link" href="{% url 'strategic_objective_update' objective.id %}">{{ objective.objective_name }}</a>
+                            <a class="link" href="{% url 'achievement_update' achievement.id %}">
+                                {{ achievement.goal_score }}
+                            </a>
                         </th>
 
-                        <!-- Strategic Theme -->
-                        <td class="field-theme">
-                            {{ objective.strategic_theme.theme_name }}
+                        <!-- Color Code -->
+                        <td class="field-color-code">
+                            {{ achievement.color_code }}
                         </td>
 
-                        <!-- Designation -->
-                        <td class="field-designation">
-                            {{ objective.designation.name }}
+                        <!-- Explanation -->
+                        <td class="field-explanation">
+                            {{ achievement.explanation|truncatechars:50 }}
+                        </td>
+
+                        <!-- Associated Activity -->
+                        <td class="field-activity">
+                            {{ achievement.activity.name }}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center">
-                            No strategic objectives found.
+                        <td colspan="5" class="text-center">
+                            No achievements found.
                         </td>
                     </tr>
                     {% endfor %}
@@ -88,5 +101,4 @@
         </div>
     </div>
 </div>
-
 {% endblock content %}

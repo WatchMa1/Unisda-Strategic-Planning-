@@ -1,15 +1,18 @@
 from django.urls import path
 from . import views
 from .views import (
-    HomeView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemeUpdateView, StrategicThemeDeleteView,
+    AchievementCreateView, AchievementDeleteView, AchievementDetailView, AchievementListView, AchievementUpdateView, HomeView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemeUpdateView, StrategicThemeDeleteView,
     StrategicObjectiveListView, StrategicObjectiveDetailView, StrategicObjectiveCreateView, StrategicObjectiveUpdateView, StrategicObjectiveDeleteView,
-    DepartmentListView, DepartmentDetailView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView,
+    DesignationListView, DesignationDetailView, DesignationCreateView, DesignationUpdateView, DesignationDeleteView,
     KPIListView, KPIDetailView, KPICreateView, KPIUpdateView, KPIDeleteView,
-    ActivityListView, ActivityDetailView, ActivityCreateView, ActivityUpdateView, ActivityDeleteView
+    ActivityListView, ActivityDetailView, ActivityCreateView, ActivityUpdateView, ActivityDeleteView, UserCreateView, UserListView, UserUpdateView
 )
 
 urlpatterns = [
+    path('main-activity/create/', MainActivityCreateView.as_view(), name='main_activity_create'),
+    path('main-activity/update/', MainActivityUpdateView.as_view(), name='main_activity_update'),
     path('', HomeView.as_view(), name='home'),
+    path('login/', LoginView.as_view(), name='user_login'),
     path('strategic-themes/', StrategicThemeListView.as_view(), name='strategic_themes'),
     path('strategic-themes/<int:pk>/', StrategicThemeDetailView.as_view(), name='strategic_theme_detail'),
     path('strategic-themes/create/', StrategicThemeCreateView.as_view(), name='strategic_theme_create'),
@@ -22,11 +25,11 @@ urlpatterns = [
     path('strategic-objectives/<int:pk>/update/', StrategicObjectiveUpdateView.as_view(), name='strategic_objective_update'),
     path('strategic-objectives/<int:pk>/delete/', StrategicObjectiveDeleteView.as_view(), name='strategic_objective_delete'),
     
-    path('departments/', DepartmentListView.as_view(), name='department_list'),
-    path('departments/<int:pk>/', DepartmentDetailView.as_view(), name='department_detail'),
-    path('departments/create/', DepartmentCreateView.as_view(), name='department_create'),
-    path('departments/<int:pk>/update/', DepartmentUpdateView.as_view(), name='department_update'),
-    path('departments/<int:pk>/delete/', DepartmentDeleteView.as_view(), name='department_delete'),
+    path('designations/', DesignationListView.as_view(), name='designation_list'),
+    path('designations/<int:pk>/', DesignationDetailView.as_view(), name='designation_detail'),
+    path('designations/create/', DesignationCreateView.as_view(), name='designation_create'),
+    path('designations/<int:pk>/update/', DesignationUpdateView.as_view(), name='designation_update'),
+    path('designations/<int:pk>/delete/', DesignationDeleteView.as_view(), name='designation_delete'),
     
     path('kpis/', KPIListView.as_view(), name='kpi_list'),
     path('kpis/<int:pk>/', KPIDetailView.as_view(), name='kpi_detail'),
@@ -39,4 +42,31 @@ urlpatterns = [
     path('activities/create/', ActivityCreateView.as_view(), name='activity_create'),
     path('activities/<int:pk>/update/', ActivityUpdateView.as_view(), name='activity_update'),
     path('activities/<int:pk>/delete/', ActivityDeleteView.as_view(), name='activity_delete'),
+    
+    path('achievements/', AchievementListView.as_view(), name='achievement_list'),
+    path('achievements/<int:pk>/', AchievementDetailView.as_view(), name='achievement_detail'),
+    path('achievements/create/', AchievementCreateView.as_view(), name='achievement_create'),
+    path('achievements/<int:pk>/update/', AchievementUpdateView.as_view(), name='achievement_update'),
+    path('achievements/<int:pk>/delete/', AchievementDeleteView.as_view(), name='achievement_delete'),
+    
+     path('roles/', RoleListView.as_view(), name='role_list'),
+    path('roles/<int:pk>/', RoleDetailView.as_view(), name='role_detail'),
+    path('roles/create/', RoleCreateView.as_view(), name='role_create'),
+    path('roles/update/<int:pk>/', RoleUpdateView.as_view(), name='role_update'),
+
+    # Designation URLs
+    path('designations/', DesignationListView.as_view(), name='designation_list'),
+    path('designations/<int:pk>/', DesignationDetailView.as_view(), name='designation_detail'),
+    path('designations/create/', DesignationCreateView.as_view(), name='designation_create'),
+    path('designations/update/<int:pk>/', DesignationUpdateView.as_view(), name='designation_update'),
+
+    # Report URLs
+    path('reports/', ReportListView.as_view(), name='report_list'),
+    path('reports/<int:pk>/', ReportDetailView.as_view(), name='report_detail'),
+    path('reports/create/', ReportCreateView.as_view(), name='report_create'),
+    path('reports/update/<int:pk>/', ReportUpdateView.as_view(), name='report_update'),
+    
+    path('users/', UserListView.as_view(), name='user_list'),
+    path('users/create/', UserCreateView.as_view(), name='user_create'),
+    path('users/<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
 ]
