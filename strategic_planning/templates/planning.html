@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'general/base.html' %}
 
 {% load static %}
 
@@ -10,13 +10,12 @@
 
 <main id="main" class="main">
     <div class="pagetitle" style="margin-left: 15px;">
-        {% if page_name == 'strategic_theme_create' %}
-        <h1>Add New Strategic Theme</h1>
+        <h1> {{theme.theme_name}}</h1>
         <ul class="breadcrumb">
             <li><a href="{% url 'home' %}">Strategic Theme</a></li>
             <li>Add Strategic Theme</li>
         </ul>
-        {% endif %}
+    
     </div>
     <div class="main-content">
         <div class="page-content">
@@ -25,8 +24,74 @@
                     <div class="col-lg-12">
                         <div class="card pt-5 pb-5">
                             <div class="card-body">
+                                {% if page_name == 'objective_planning_list' %}
+                                <div class="table-responsive mt-5 p-0">
+                                    <table id="result_list" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <!-- Select All Checkbox -->
+                                                <th class="djn-checkbox-select-all" tabindex="0" rowspan="1" colspan="1">
+                                                    <div class="text">
+                                                        <span>
+                                                            <input type="checkbox" id="action-toggle"
+                                                                aria-label="Select all objects on this page for an action">
+                                                        </span>
+                                                    </div>
+                                                </th>
+                        
+                                                <!-- Table Header for Objective Name -->
+                                                <th class="sorting text-green" tabindex="0" rowspan="1" colspan="1">
+                                                    <h5 class="text text-green">Objective Name</h5>
+                                                </th>
+                        
+                                                <!-- Table Header for Strategic Theme -->
+                                                <th class="sorting" tabindex="0" rowspan="1" colspan="1">
+                                                    <h5 class="text text-green">Strategic Theme</h5>
+                                                </th>
+                        
+                                                <!-- Table Header for Designation -->
+                                                <th class="sorting" tabindex="0" rowspan="1" colspan="1">
+                                                    <h5 class="text text-green">Designation</h5>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for objective in strategic_objectives %}
+                                            <tr role="row" class="{% cycle 'even' 'odd' %}">
+                                                <!-- Checkbox for each row -->
+                                                <td class="action-checkbox">
+                                                    <input type="checkbox" name="_selected_action" value="{{ objective.id }}"
+                                                        class="action-select"
+                                                        aria-label="Select this object for an action - {{ objective.objective_name }}">
+                                                </td>
+                        
+                                                <!-- Objective Name -->
+                                                <th class="field-__str__">
+                                                    <a class="link" href="{% url 'strategic_objective_update' objective.id %}">{{ objective.objective_name }}</a>
+                                                </th>
+                        
+                                                <!-- Strategic Theme -->
+                                                <td class="field-theme">
+                                                    {{ objective.strategic_theme.theme_name }}
+                                                </td>
+                        
+                                                <!-- Designation -->
+                                                <td class="field-designation">
+                                                    {{ objective.designation.name }}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="4" class="text-center">
+                                                    No strategic objectives found.
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                                {% if page_name == 'main_activity_create' or page_name == 'main_activity_update' %}
+                                {% elif page_name == 'main_activity_create' or page_name == 'main_activity_update' %}
                                 <form method="POST">
                                     {% csrf_token %}
                                     <div class="row">

@@ -87,7 +87,8 @@ class StrategicObjective(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     objective_name = models.CharField(max_length=200)
-    strategic_theme = models.ForeignKey(StrategicTheme, on_delete=models.CASCADE, related_name="objectives")    
+    strategic_theme = models.ForeignKey(StrategicTheme, on_delete=models.CASCADE, related_name="objectives") 
+    designation = models.ManyToManyField(Designation, related_name="objectives")
     def __str__(self):
         return self.objective_name
 
@@ -96,13 +97,8 @@ class KPI(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     strategic_objective = models.ForeignKey(StrategicObjective, on_delete=models.CASCADE, related_name="kpis")
-    designation = models.ManyToManyField(Designation, related_name="objectives")
-
     def __str__(self):
         return self.name
-from django.db import models
-from django.utils.timezone import now
-from django.contrib.auth.models import User
 
 class MainActivity(models.Model):
     date_created = models.DateTimeField(default=now)

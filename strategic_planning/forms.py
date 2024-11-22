@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import (
-    MainActivity, User, Designation, StrategicTheme, StrategicObjective, KPI, 
+from .models import (MainActivity, User, Designation, StrategicTheme, StrategicObjective, KPI, 
     Activity, Achievement, Role, Report
 )
 
@@ -9,26 +8,24 @@ from .models import (
 class StrategicThemeForm(forms.ModelForm):
     class Meta:
         model = StrategicTheme
-        fields = ['theme_name', 'description', 'created_by']
+        fields = ['theme_name', 'description']
         labels = {
             'theme_name': 'Theme Name',
             'description': 'Description',
-            'created_by': 'Created By',
         }
         widgets = {
             'theme_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter theme name'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter description'}),
-            'created_by': forms.Select(attrs={'class': 'form-control'}),
         }
 
 class StrategicObjectiveForm(forms.ModelForm):
     class Meta:
         model = StrategicObjective
-        fields = ['objective_name', 'strategic_theme', 'created_by']
+        fields = ['objective_name', 'strategic_theme','designation' ]
         labels = {
             'objective_name': 'Objective',
             'strategic_theme': 'Strategic Theme',
-            'created_by': 'Created By',
+            'designation' : 'Department'
         }
         widgets = {
             'objective_name': forms.TextInput(attrs={
@@ -36,17 +33,17 @@ class StrategicObjectiveForm(forms.ModelForm):
                 'placeholder': 'Enter Objective'}),
             'strategic_theme': forms.Select(attrs={
                 'class': 'form-control'
-                }),
-            
-            'created_by': forms.Select(attrs={
+                }),     
+            'designation': forms.SelectMultiple(attrs={
                 'class': 'form-control'
-                }),
+            }),
+
         }
 
 class KPIForm(forms.ModelForm):
     class Meta:
         model = KPI
-        fields = ['name', 'strategic_objective', 'created_by', 'designation']
+        fields = ['name', 'strategic_objective']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -55,18 +52,12 @@ class KPIForm(forms.ModelForm):
             'strategic_objective': forms.Select(attrs={
                 'class': 'form-control',
             }),
-            'created_by': forms.Select(attrs={
-                'class': 'form-control',
-            }),
-            'designation': forms.SelectMultiple(attrs={
-                'class': 'form-control'
-            }),
+
         }
         labels = {
             'name': 'KPI Name',
             'strategic_objective': 'Strategic Objective',
-            'created_by': 'Created By', 
-            'designation' : 'Department'
+            
         }
 
 

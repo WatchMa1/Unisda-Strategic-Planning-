@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'general/base.html' %}
 {% load static %}
 
 {% block content %}
@@ -173,19 +173,7 @@
                                                 {% endif %}
                                             </div>
 
-                                            <!-- Created By -->
-                                            <div class="form-group mt-3">
-                                                <div class="d-flex">
-                                                    <label for="{{ form.created_by.id_for_label }}"
-                                                        class="form-label box">Created By:</label>
-                                                    {{ form.created_by }}
-                                                </div>
-                                                {% if form.created_by.errors %}
-                                                <div class="text-danger">
-                                                    {{ form.created_by.errors.as_text }}
-                                                </div>
-                                                {% endif %}
-                                            </div>
+                                           
                                         </div>
 
                                         <div class="col-4">
@@ -205,8 +193,7 @@
                                     </div>
                                 </form>
 
-                                {% elif page_name == 'strategic_objective_create' or page_name ==
-                                'strategic_objective_update' %}
+                                {% elif page_name == 'strategic_objective_create' or page_name == 'strategic_objective_update' %}
                                 <form method="POST">
                                     {% csrf_token %}
                                     <div class="row">

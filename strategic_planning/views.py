@@ -11,12 +11,11 @@ from .models import (
 )
 from .forms import (AchievementForm, ActivityForm, KPIForm, LoginForm, MainActivityForm, StrategicObjectiveForm, StrategicThemeForm, ReportForm, UserForm, RoleForm, DesignationForm, )
 from django.views.generic import TemplateView
-
-# Create your views here.
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
+
+# Create your views here.
 
 class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
     required_role = None  # Set the required role in the view
@@ -39,7 +38,6 @@ class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
 
         return super().dispatch(request, *args, **kwargs)
 
-
 class HomeView(View):
     def get(self, request):
         return render(request, 'home.html')
@@ -54,6 +52,7 @@ class StrategicThemeCreateView(CreateView):
     form_class = StrategicThemeForm
     template_name = 'forms.html'
     success_url = reverse_lazy('strategic_themes')
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'strategic_theme_create'  # Set this for conditional rendering
@@ -63,7 +62,6 @@ class StrategicThemeDetailView(DetailView):
     model = StrategicTheme
     template_name = 'strategic_theme_detail.html'
     context_object_name = 'strategic_theme'
-
 
 class StrategicThemeUpdateView(UpdateView):
     model = StrategicTheme
@@ -75,13 +73,14 @@ class StrategicThemeUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'strategic_theme_update'
         return context
-
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user  # Set the logged-in user
+        return super().form_valid(form)
 
 class StrategicThemeDeleteView(DeleteView):
     model = StrategicTheme
     template_name = 'strategic_theme_confirm_delete.html'
     success_url = reverse_lazy('strategic_theme_list')
-
 
 #strategic objectives views 
 class StrategicObjectiveListView(ListView):
@@ -107,6 +106,10 @@ class StrategicObjectiveCreateView(RoleAndDesignationRequiredMixin, TemplateView
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'strategic_objective_create'  # Set this for conditional rendering
         return context
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user  # Set the logged-in user
+        return super().form_valid(form)
 
 class StrategicObjectiveUpdateView(UpdateView):
     model = StrategicObjective
@@ -118,6 +121,10 @@ class StrategicObjectiveUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'strategic_objective_update'  # Set this for conditional rendering
         return context
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user  
+        return super().form_valid(form)
 
 class StrategicObjectiveDeleteView(DeleteView):
     model = StrategicObjective
@@ -141,7 +148,6 @@ class KPIDetailView(DetailView):
     model = KPI
     template_name = 'kpi_detail.html'
     context_object_name = 'kpi'
-
 
 class KPICreateView(CreateView):
     model = KPI
@@ -369,7 +375,7 @@ class RoleDetailView(DetailView):
     context_object_name = 'role'
 
 
-class RoleCreateView(RoleAndDesignationRequiredMixin, TemplateView):
+class RoleCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = Role
     required_designation = "Technical"
     form_class = RoleForm
@@ -474,3 +480,47 @@ def dashboard(request):
         'roles': roles
     }
     return render(request, 'home.html', context)
+
+
+# Planning Module
+
+class StrategicThemePlanningListView(ListView):
+    model = StrategicTheme
+    template_name = 'general/base.html'  # Replace with your template name
+    context_object_name = 'themes'
+
+    def get_queryset(self):
+        # Fetch all strategic themes
+        return StrategicTheme.objects.all()
+
+
+class StrategicObjectivePlanningListView(ListView):
+    model = StrategicObjective
+    template_name = 'planning.html'  # Replace with your template name
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'objective_planning_list'  
+        return context
+    
+    def get_queryset(self):
+        # Get the logged-in user's department
+        user_designation = self.request.user.designation
+        theme_id = self.kwargs.get('theme_id')
+
+        # Filter objectives by the theme and user's department
+        return StrategicObjective.objects.filter(
+            strategic_theme_id=theme_id, 
+            designation=user_designation
+        )
+
+
+class KPIPlanningListView(ListView):
+    model = KPI
+    template_name = 'kpis.html'  # Replace with your template name
+    context_object_name = 'kpis'
+
+    def get_queryset(self):
+        # Filter KPIs based on the selected objective
+        objective_id = self.kwargs.get('objective_id')
+        return KPI.objects.filter(strategic_objective_id=objective_id)

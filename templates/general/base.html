@@ -57,19 +57,16 @@
             </div>
             <div class="app-menu">
                 <ul class="accordion-menu">
-                    <li class="sidebar-title">
-                        SPEMEC
-                    </li>
-                    <li class="active-page">
-                        <a href="" class="active"><i class="material-icons-two-tone">dashboard</i>Dashboard</a>
-                    </li>
-                    <li class="">
-                        <a href="" class="active"><i class="material-icons-two-tone">
-                                view_timeline
-                            </i> Reports </a>
-                    </li>
+                    <li class="sidebar-title">Strategic Themes</li>
+                    {% for theme in strategic_themes %}
                     <li>
-                        {% if "Admin" in roles %}
+                        <a href="{% url 'objective_planning_list' theme.id %}">
+                            <i class="material-icons-two-tone"></i> {{ theme.theme_name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    <li>
+                      
                         <a href=""><i class="material-icons-two-tone">star</i>Admin<i
                                 class="material-icons has-sub-menu">keyboard_arrow_right</i></a>
                         <ul class="sub-menu">
@@ -98,7 +95,7 @@
                                 <a href="{% url 'user_list' %}">Users</a>
                             </li>
                         </ul>
-                        {% endif %}
+                      
                     </li>
                 </ul>
             </div>
