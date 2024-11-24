@@ -1,5 +1,4 @@
 from django.urls import path
-from . import views
 from .views import (
     AchievementCreateView, AchievementDeleteView, AchievementDetailView, AchievementListView, AchievementUpdateView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
     StrategicObjectiveListView, StrategicObjectiveDetailView, StrategicObjectiveCreateView, StrategicObjectiveUpdateView, StrategicObjectiveDeleteView,
@@ -70,10 +69,11 @@ urlpatterns = [
     path('users/<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
     
     # Planning Views
-    path('main-activity/create/', MainActivityCreateView.as_view(), name='main_activity_create'),
+    path('main-activity/create/<int:kpi_id>/', MainActivityCreateView.as_view(), name='main_activity_create'),
     path('main-activity/update/', MainActivityUpdateView.as_view(), name='main_activity_update'),
     
     path('themes/', StrategicThemePlanningListView.as_view(), name='theme_planning_list'),
     path('themes/<int:theme_id>/objectives/', StrategicObjectivePlanningListView.as_view(), name='objective_planning_list'),
-    path('objectives/<int:objective_id>/kpis/', KPIPlanningListView.as_view(), name='kpi_planning_list'),
+    path('objectives/<int:strategic_objective_id>/kpis/', KPIPlanningListView.as_view(), name='kpi_planning_list'),
+
 ]

@@ -105,6 +105,8 @@ class MainActivity(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
+    kpi = models.ForeignKey('KPI', on_delete=models.CASCADE, related_name="main_activities", null=True, default=None)
+
 
     def __str__(self):
         return self.name

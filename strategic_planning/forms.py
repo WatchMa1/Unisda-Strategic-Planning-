@@ -21,12 +21,13 @@ class StrategicThemeForm(forms.ModelForm):
 class StrategicObjectiveForm(forms.ModelForm):
     class Meta:
         model = StrategicObjective
-        fields = ['objective_name', 'strategic_theme','designation' ]
+        fields = ['objective_name', 'strategic_theme', 'designation' ]
         labels = {
             'objective_name': 'Objective',
             'strategic_theme': 'Strategic Theme',
             'designation' : 'Department'
         }
+        
         widgets = {
             'objective_name': forms.TextInput(attrs={
                 'class': 'form-control', 

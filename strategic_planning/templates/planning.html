@@ -3,11 +3,24 @@
 {% load static %}
 
 {% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEJd0Zy1J9HTM6gwp1s1P0l9soFiG5wVwwr5O2z6Wm0nVwDk9wGiQKxaPgiY8" crossorigin="anonymous">
 
-<link rel="stylesheet" href="{% static 'assets/css/forms.css' %}">
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"
-    integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-
+    <style>
+        li a{
+            color: #135761ea;
+        }
+        .text-green{
+            color: #135761ea !important;
+        }
+        .nav-pills li a:hover{
+            background-color: #17a2b8;
+        }
+        .nav-pills li:active{
+            background-color: #135761ea;
+            color: white;
+        }
+    </style>
 <main id="main" class="main">
     <div class="pagetitle" style="margin-left: 15px;">
         <h1> {{theme.theme_name}}</h1>
@@ -15,81 +28,69 @@
             <li><a href="{% url 'home' %}">Strategic Theme</a></li>
             <li>Add Strategic Theme</li>
         </ul>
-    
+
     </div>
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="card pt-5 pb-5">
+                        <div class="card pb-5">
                             <div class="card-body">
                                 {% if page_name == 'objective_planning_list' %}
-                                <div class="table-responsive mt-5 p-0">
-                                    <table id="result_list" class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <!-- Select All Checkbox -->
-                                                <th class="djn-checkbox-select-all" tabindex="0" rowspan="1" colspan="1">
-                                                    <div class="text">
-                                                        <span>
-                                                            <input type="checkbox" id="action-toggle"
-                                                                aria-label="Select all objects on this page for an action">
-                                                        </span>
-                                                    </div>
-                                                </th>
-                        
-                                                <!-- Table Header for Objective Name -->
-                                                <th class="sorting text-green" tabindex="0" rowspan="1" colspan="1">
-                                                    <h5 class="text text-green">Objective Name</h5>
-                                                </th>
-                        
-                                                <!-- Table Header for Strategic Theme -->
-                                                <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                                                    <h5 class="text text-green">Strategic Theme</h5>
-                                                </th>
-                        
-                                                <!-- Table Header for Designation -->
-                                                <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                                                    <h5 class="text text-green">Designation</h5>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for objective in strategic_objectives %}
-                                            <tr role="row" class="{% cycle 'even' 'odd' %}">
-                                                <!-- Checkbox for each row -->
-                                                <td class="action-checkbox">
-                                                    <input type="checkbox" name="_selected_action" value="{{ objective.id }}"
-                                                        class="action-select"
-                                                        aria-label="Select this object for an action - {{ objective.objective_name }}">
-                                                </td>
-                        
-                                                <!-- Objective Name -->
-                                                <th class="field-__str__">
-                                                    <a class="link" href="{% url 'strategic_objective_update' objective.id %}">{{ objective.objective_name }}</a>
-                                                </th>
-                        
-                                                <!-- Strategic Theme -->
-                                                <td class="field-theme">
-                                                    {{ objective.strategic_theme.theme_name }}
-                                                </td>
-                        
-                                                <!-- Designation -->
-                                                <td class="field-designation">
-                                                    {{ objective.designation.name }}
-                                                </td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr>
-                                                <td colspan="4" class="text-center">
-                                                    No strategic objectives found.
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                <div class="container mt-5">
+                                    <div class="row">
+                                        <div class="col-4">
+                                    <!-- Tabs for Objectives -->
+                                    <ul class="nav nav-tabs d-flex" id="objectiveTabs" role="tablist">
+                                        {% for objective in strategic_objectives %}
+                                        <li class="nav-item" role="presentation">
+                                            <button 
+                                                class="nav-link {% if forloop.first %}active{% endif %}" 
+                                                id="objective-{{ objective.id }}-tab" 
+                                                data-bs-toggle="tab" 
+                                                data-bs-target="#objective-{{ objective.id }}" 
+                                                type="button" 
+                                                role="tab" 
+                                                aria-controls="objective-{{ objective.id }}" 
+                                                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                                {{ objective.objective_name }}
+                                            </button>
+                                        </li>
+                                        {% empty %}
+                                        <li>No objectives found.</li>
+                                        {% endfor %}
+                                    </ul>
+                                        </div>
+                                        <div class="col-8">
+                                    <!-- Tab Content for KPIs -->
+                                    <div class="tab-content mt-3" id="objectiveTabContent">
+                                        {% for objective in strategic_objectives %}
+                                        <div 
+                                            class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                                            id="objective-{{ objective.id }}" 
+                                            role="tabpanel" 
+                                            aria-labelledby="objective-{{ objective.id }}-tab">
+                                            <h5 class="text-green fw-bold">KPIs for {{ objective.objective_name }}</h5>
+                                            <ul class="list-group">
+                                                {% for kpi in objective.kpis.all %}
+                                                <li class="list-group-item">
+                                                    <a href="{% url 'main_activity_create' kpi.id %}">{{ kpi.name }}</a>
+                                                </li>
+                                                {% empty %}
+                                                <li class="list-group-item">No KPIs found for this objective.</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                        </div>
+                                    </div>
+
+
+                                
                                 </div>
+                                
 
                                 {% elif page_name == 'main_activity_create' or page_name == 'main_activity_update' %}
                                 <form method="POST">
@@ -110,12 +111,11 @@
                                                 </div>
                                                 {% endif %}
                                             </div>
-
+                                
                                             <!-- Activity Description -->
                                             <div class="form-group mt-3">
                                                 <div class="d-flex">
-                                                    <label for="{{ form.description.id_for_label }}"
-                                                        class="form-label box">
+                                                    <label for="{{ form.description.id_for_label }}" class="form-label box">
                                                         {{ form.description.label }}:
                                                     </label>
                                                     {{ form.description }}
@@ -126,88 +126,16 @@
                                                 </div>
                                                 {% endif %}
                                             </div>
-
-                                            <!-- Activity Start Date -->
-                                            <div class="form-group mt-3">
-                                                <div class="d-flex">
-                                                    <label for="{{ form.start_date.id_for_label }}"
-                                                        class="form-label box">
-                                                        {{ form.start_date.label }}:
-                                                    </label>
-                                                    {{ form.start_date }}
-                                                </div>
-                                                {% if form.start_date.errors %}
-                                                <div class="text-danger">
-                                                    {{ form.start_date.errors.as_text }}
-                                                </div>
-                                                {% endif %}
-                                            </div>
-                                            
-                                            <!-- Activity end Date -->
-                                            <div class="form-group mt-3">
-                                                <div class="d-flex">
-                                                    <label for="{{ form.end_date.id_for_label }}"
-                                                        class="form-label box">
-                                                        {{ form.end_date.label }}:
-                                                    </label>
-                                                    {{ form.end_date }}
-                                                </div>
-                                                {% if form.end_date.errors %}
-                                                <div class="text-danger">
-                                                    {{ form.end_date.errors.as_text }}
-                                                </div>
-                                                {% endif %}
-                                            </div>
-
-                                            <!-- Associated KPI -->
-                                            <div class="form-group mt-3">
-                                                <div class="d-flex">
-                                                    <label for="{{ form.kpi.id_for_label }}" class="form-label box">
-                                                        {{ form.kpi.label }}:
-                                                    </label>
-                                                    {{ form.kpi }}
-                                                </div>
-                                                {% if form.kpi.errors %}
-                                                <div class="text-danger">
-                                                    {{ form.kpi.errors.as_text }}
-                                                </div>
-                                                {% endif %}
-                                            </div>
-
-                                            <!-- Estimated Budget Amount -->
-                                            <div class="form-group mt-3">
-                                                <div class="d-flex">
-                                                    <label for="{{ form.estimated_amount.id_for_label }}"
-                                                        class="form-label box">
-                                                        {{ form.estimated_amount.label }}:
-                                                    </label>
-                                                    {{ form.estimated_amount }}
-                                                </div>
-                                                {% if form.estimated_amount.errors %}
-                                                <div class="text-danger">
-                                                    {{ form.estimated_amount.errors.as_text }}
-                                                </div>
-                                                {% endif %}
-                                            </div>
-
                                         </div>
-
-
+                                
                                         <div class="col-4">
-                                            <div>
-                                                <button type="submit" class="btn btn-success w-100">Save</button>
-                                            </div>
-                                            <div class="mt-3">
-                                                <button type="submit" class="btn btn-green w-100">Save and Add</button>
-                                            </div>
-                                            <div class="mt-3">
-                                                <a href="{% url 'activity_list' %}"
-                                                    class="btn btn-danger w-100">Cancel</a>
-                                            </div>
+                                            <button type="submit" class="btn btn-success w-100">Save</button>
+                                            <a href="{% url 'activity_list' %}" class="btn btn-danger w-100 mt-3">Cancel</a>
                                         </div>
                                     </div>
                                 </form>
                                 
+
                                 {% elif page_name == 'activity_create' or page_name == 'activity_update' %}
                                 <form method="POST">
                                     {% csrf_token %}

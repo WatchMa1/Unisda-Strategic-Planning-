@@ -95,12 +95,12 @@ class StrategicObjectiveDetailView(DetailView):
     context_object_name = 'strategic_objective'
 
 
-class StrategicObjectiveCreateView(RoleAndDesignationRequiredMixin, TemplateView):
+class StrategicObjectiveCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = StrategicObjective
     required_designation = 'Technical'
     form_class = StrategicObjectiveForm
     template_name = 'forms.html'
-    success_url = reverse_lazy('strategic_objective_list')
+    success_url = reverse_lazy('strategic_objectives')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -159,6 +159,10 @@ class KPICreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'kpi_create'  # Set this for conditional rendering
         return context
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user  # Set the logged-in user
+        return super().form_valid(form)
 
 
 class KPIUpdateView(UpdateView):
@@ -182,7 +186,16 @@ class MainActivityCreateView(CreateView):
     form_class = MainActivityForm
     template_name = 'planning.html'
     success_url = reverse_lazy('activities')  # Replace with your success URL
-
+    
+    def form_valid(self, form):
+        """
+        Set the KPI field to the KPI object based on kpi_id before saving.
+        """
+        kpi_id = self.kwargs.get('kpi_id')
+        form.instance.kpi = get_object_or_404(KPI, id=kpi_id)
+        form.instance.created_by = self.request.user  # Optionally set the creator
+        return super().form_valid(form)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'main_activity_create'  # Set this for conditional rendering
@@ -500,27 +513,40 @@ class StrategicObjectivePlanningListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        theme_id = self.kwargs.get('theme_id')
+        
+        # Retrieve the StrategicTheme object based on the theme_id
+        theme = get_object_or_404(StrategicTheme, id=theme_id)
+        
+        context['theme'] = theme
         context['page_name'] = 'objective_planning_list'  
         return context
     
     def get_queryset(self):
-        # Get the logged-in user's department
         user_designation = self.request.user.designation
         theme_id = self.kwargs.get('theme_id')
-
-        # Filter objectives by the theme and user's department
-        return StrategicObjective.objects.filter(
-            strategic_theme_id=theme_id, 
-            designation=user_designation
+        queryset = StrategicObjective.objects.filter(
+        strategic_theme__id=theme_id,
+        designation=user_designation
         )
-
-
+        print(queryset.query)  # Log the SQL query for debugging
+        return queryset
 class KPIPlanningListView(ListView):
     model = KPI
-    template_name = 'kpis.html'  # Replace with your template name
+    template_name = 'planning.html'  # Replace with your template name
     context_object_name = 'kpis'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        strategic_objective_id = self.kwargs.get('strategic_objective_id')
+
+        # Retrieve the strategic objective
+        objective = get_object_or_404(StrategicObjective, id=strategic_objective_id)
+        context['objective'] = objective
+        context['page_name'] = 'kpi_planning_list'
+        return context
+
     def get_queryset(self):
-        # Filter KPIs based on the selected objective
-        objective_id = self.kwargs.get('objective_id')
-        return KPI.objects.filter(strategic_objective_id=objective_id)
+        objective_id = self.kwargs.get('strategic_objective_id')
+        queryset = KPI.objects.filter(strategic_objective_id=objective_id)
+        return queryset
