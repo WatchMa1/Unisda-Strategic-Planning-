@@ -7,9 +7,9 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import (
     MainActivity, Report, StrategicTheme, StrategicObjective, Designation, KPI,
-    Activity, Achievement, User, Role
+    Activity, User, Role
 )
-from .forms import (AchievementForm, ActivityForm, KPIForm, LoginForm, MainActivityForm, StrategicObjectiveForm, StrategicThemeForm, ReportForm, UserForm, RoleForm, DesignationForm, )
+from .forms import ( ActivityForm, KPIForm, LoginForm, MainActivityForm, StrategicObjectiveForm, StrategicThemeForm, ReportForm, UserForm, RoleForm, DesignationForm, )
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
@@ -181,39 +181,7 @@ class KPIDeleteView(DeleteView):
     template_name = 'kpi_confirm_delete.html'
     success_url = reverse_lazy('kpi_list')
 
-class MainActivityCreateView(CreateView):
-    model = MainActivity
-    form_class = MainActivityForm
-    template_name = 'planning.html'
-    success_url = reverse_lazy('activities')  # Replace with your success URL
-    
-    def form_valid(self, form):
-        """
-        Set the KPI field to the KPI object based on kpi_id before saving.
-        """
-        kpi_id = self.kwargs.get('kpi_id')
-        form.instance.kpi = get_object_or_404(KPI, id=kpi_id)
-        form.instance.created_by = self.request.user  # Optionally set the creator
-        return super().form_valid(form)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_name'] = 'main_activity_create'  # Set this for conditional rendering
-        return context
-    
-    
-class MainActivityUpdateView(UpdateView):
-    model = MainActivity
-    form_class = MainActivityForm
-    template_name = 'planning.html'
-    success_url = reverse_lazy('activities')  # Replace with your success URL
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_name'] = 'main_activity_update'  # Set this for conditional rendering
-        return context
-    
-    
     
 # Activity Views
 class ActivityListView(ListView):
@@ -265,46 +233,6 @@ class ActivityDeleteView(DeleteView):
     success_url = reverse_lazy('activity_list')
 
 
-
-# Activity Views
-class AchievementListView(ListView):
-    model = Achievement
-    template_name = 'achievements.html'
-    context_object_name = 'activities'
-
-
-class AchievementDetailView(DetailView):
-    model = Achievement
-    template_name = 'Achievement_detail.html'
-    context_object_name = 'Achievement'
-
-
-class AchievementCreateView(CreateView):
-    model = Achievement
-    form_class = AchievementForm
-    template_name = 'forms.html'
-    success_url = reverse_lazy('achievement_list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_name'] = 'achievement_create'  # Set this for conditional rendering
-        return context
-
-class AchievementUpdateView(UpdateView):
-    model = Achievement
-    form_class = AchievementForm
-    template_name = 'forms.html'
-    success_url = reverse_lazy('achievement_list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_name'] = 'achievement_update'  # Set this for conditional rendering
-        return context
-
-class AchievementDeleteView(DeleteView):
-    model = Achievement
-    template_name = 'Achievement_confirm_delete.html'
-    success_url = reverse_lazy('Achievement_list')
     
 class DesignationListView(ListView):
     model = Designation
@@ -509,8 +437,8 @@ class StrategicThemePlanningListView(ListView):
 
 class StrategicObjectivePlanningListView(ListView):
     model = StrategicObjective
-    template_name = 'planning.html'  # Replace with your template name
-    
+    template_name = 'planning.html'  
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         theme_id = self.kwargs.get('theme_id')
@@ -550,3 +478,163 @@ class KPIPlanningListView(ListView):
         objective_id = self.kwargs.get('strategic_objective_id')
         queryset = KPI.objects.filter(strategic_objective_id=objective_id)
         return queryset
+
+
+def main_activity_create(request, kpi_id):
+    kpi = get_object_or_404(KPI, id=kpi_id)
+    form = MainActivityForm()  # Your form logic here
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'partials/kpi_content.html', {'form': form, 'kpi': kpi})
+
+    return render(request, 'full_template.html', {'form': form, 'kpi': kpi})
+
+class MainActivityCreateView(CreateView):
+    model = MainActivity
+    form_class = MainActivityForm
+    template_name = 'planning.html'
+    success_url = reverse_lazy('activities')  # Replace with your success URL
+    
+    def form_valid(self, form):
+        """
+        Set the KPI field to the KPI object based on kpi_id before saving.
+        """
+        kpi_id = self.kwargs.get('kpi_id')
+        form.instance.kpi = get_object_or_404(KPI, id=kpi_id)
+        form.instance.created_by = self.request.user  # Optionally set the creator
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kpi_id = self.kwargs.get('kpi_id')
+        name = get_object_or_404(KPI, id=kpi_id)
+        context['kpi'] = name
+        context['page_name'] = 'main_activity_create'  # Set this for conditional rendering
+        return context
+    
+    def get_success_url(self):
+        # Redirect to SubActivityCreate view after submitting
+        main_activity_id = self.object.id
+        kpi_id = self.kwargs.get('kpi_id')
+        if self.object and main_activity_id:
+            return reverse_lazy('sub_activity_create', kwargs={
+                'kpi_id': kpi_id,
+                'main_activity_id': main_activity_id
+            })
+        else:
+            return reverse_lazy('sub_activity_create_without_main', kwargs={
+                'kpi_id': kpi_id
+        })
+    
+class MainActivityUpdateView(UpdateView):
+    model = MainActivity
+    form_class = MainActivityForm
+    template_name = 'planning.html'
+    success_url = reverse_lazy('activities')  # Replace with your success URL
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'main_activity_update'  # Set this for conditional rendering
+        return context
+class ActivityPlanningUpdateView(UpdateView):
+    model = MainActivity
+    form_class = MainActivityForm
+    template_name = 'planning.html'
+    success_url = reverse_lazy('activities')  # Replace with your success URL
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'sub_activity_update'  # Set this for conditional rendering
+        return context
+    
+class ActivityPlanningCreateView(CreateView):
+    model = Activity
+    form_class = ActivityForm
+    template_name = 'planning.html'
+    success_url = reverse_lazy('sub_activity_create')  # Replace with your success URL
+    
+    def form_valid(self, form):
+        """
+        Set the KPI field to the KPI object based on kpi_id before saving.
+        """
+        kpi_id = self.kwargs.get('kpi_id')
+        main_activity_id = self.kwargs.get('main_activity_id')
+        form.instance.kpi = get_object_or_404(KPI, id=kpi_id)
+        if main_activity_id:
+            form.instance.main_activity = get_object_or_404(MainActivity, id=main_activity_id)
+        
+        form.instance.created_by = self.request.user  # Optionally set the creator
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kpi_id = self.kwargs.get('kpi_id')
+        
+        name = get_object_or_404(KPI, id=kpi_id)
+        context['kpi'] = name
+        context['page_name'] = 'sub_activity_create'  # Set this for conditional rendering
+        return context
+    def get_success_url(self):
+        # Redirect to SubActivityCreate view after submitting
+        main_activity_id = self.kwargs.get('main_activity_id')
+        kpi_id = self.kwargs.get('kpi_id')
+        if self.object and main_activity_id:
+            return reverse_lazy('sub_activity_create', kwargs={
+                'kpi_id': kpi_id,
+                'main_activity_id': main_activity_id
+            })
+        else:
+            return reverse_lazy('sub_activity_create_without_main', kwargs={
+                'kpi_id': kpi_id
+        })
+            
+            
+class ReportCreateView(LoginRequiredMixin, CreateView):
+    model = Report
+    form_class = ReportForm
+    template_name = 'reports.html'
+    success_url = reverse_lazy('report_list')  # Replace with your actual report list URL name
+
+    def form_valid(self, form):
+        # Automatically set the user and designation from the logged-in user
+        form.instance.user = self.request.user
+        form.instance.designation = self.request.user.designation  # Assuming `designation` is a field in the User model
+        return super().form_valid(form)
+class ReportListView(TemplateView):
+    template_name = 'reports.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pass activities and reports to the template
+        context['activities'] = Activity.objects.all()
+        context['reports'] = Report.objects.filter(designation=self.request.user.designation)
+        context['form'] = ReportForm()
+        return context
+class ActivityReportView(TemplateView):
+    template_name = 'report_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['activities'] = Activity.objects.all()  # Fetch all activities
+        context['reports'] = Report.objects.filter(designation=self.request.user.designation)
+        context['form'] = ReportForm()
+        return context
+class SubmitReportView(View):
+    def post(self, request, pk):
+        activity = get_object_or_404(Activity, pk=pk)
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            # Create or update the report for this activity
+            report, created = Report.objects.update_or_create(
+                user=request.user,
+                activity=activity,
+                defaults={
+                    'report_date': form.cleaned_data['report_date'],
+                    'goal_score': form.cleaned_data['goal_score'],
+                    'report_details': form.cleaned_data['report_details'],
+                    'status': 1,  # Mark as submitted
+                },
+            )
+            return redirect('report_list')  # Replace with the correct name of the activity list view
+        return redirect('report_list')
+    

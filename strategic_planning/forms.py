@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import (MainActivity, User, Designation, StrategicTheme, StrategicObjective, KPI, 
-    Activity, Achievement, Role, Report
+    Activity, Role, Report
 )
 
 
@@ -87,15 +87,13 @@ class ActivityForm(forms.ModelForm):
         model = Activity
         fields = [
             'name', 'description', 'start_date', 'end_date',
-            'kpi', 'main_activity', 'estimated_amount'
+             'estimated_amount'
         ]  # Exclude 'created_by'
         labels = {
             'name': 'Activity Name',
             'description': 'Description',
             'start_date': 'Start Date',
             'end_date': 'End Date',
-            'kpi': 'Key Performance Indicator',
-            'main_activity': 'Main Activity',
             'estimated_amount': 'Estimated Amount',
         }
         widgets = {
@@ -115,35 +113,11 @@ class ActivityForm(forms.ModelForm):
             'end_date': forms.DateInput(attrs={
                 'class': 'form-control',
                 'type': 'date',
-            }),
-            'kpi': forms.Select(attrs={
-                'class': 'form-control',
-            }),
-            'main_activity': forms.Select(attrs={
-                'class': 'form-control',
-            }),
+            }),            
             'estimated_amount': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Enter the estimated amount',
             }),
-        }
-
-
-class AchievementForm(forms.ModelForm):
-    class Meta:
-        model = Achievement
-        fields = ['goal_score', 'color_code', 'explanation', 'activity']
-        widgets = {
-            'goal_score': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter goal score'}),
-            'color_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter a color code'}),
-            'explanation': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Provide an explanation'}),
-            'activity': forms.Select(attrs={'class': 'form-control'}),
-        }
-        labels = {
-            'goal_score': 'Goal Score',
-            'color_code': 'Color Code',
-            'explanation': 'Explanation',
-            'activity': 'Associated Activity',
         }
 
 class RoleForm(forms.ModelForm):
@@ -172,20 +146,16 @@ class DesignationForm(forms.ModelForm):
 class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
-        fields = ['quarter', 'user', 'designation', 'activity', 'report_details']
+        fields = ['report_date', 'report_details', 'goal_score']
         labels = {
-            'quarter': 'Quarter:',
-            'user': 'User:',
-            'designation': 'Designation:',
-            'activity': 'Activity:',
+            'report_date': 'Report Date:',
             'report_details': 'Report Details:',
+            'goal_score': 'Goal Score:',
         }
         widgets = {
-            'quarter': forms.Select(attrs={'class': 'form-control'}),
-            'user': forms.Select(attrs={'class': 'form-control'}),
-            'designation': forms.Select(attrs={'class': 'form-control'}),
-            'activity': forms.TextInput(attrs={'class': 'form-control'}),
-            'report_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'report_date': forms.Select(attrs={'class': 'form-control'}),
+            'report_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'goal_score': forms.Select(attrs={'class': 'form-control'}),
         }
 
 class UserForm(forms.ModelForm):

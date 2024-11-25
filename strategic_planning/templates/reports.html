@@ -4,104 +4,55 @@
 {% block content %}
 <div class="card">
     <div class="card-body">
-        <div class="example-container">
-            <div class="example-content bg-light">
-                <div class="section-description d-flex align-items-center">
-                    <div class="section-description-content flex-grow-1">
-                        <h1 class="">Reports List</h1>
-                    </div>
-                    <div class="section-description-actions">
-                        <a href="#" class="btn btn-dark">
-                            <i class="material-icons-outlined">file_download</i>Download
-                        </a>
-                        <a href="{% url 'report_create' %}" class="btn btn-green">
-                            <i class="material-icons">add</i>Create Report
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-responsive mt-5 p-0">
-            <table id="result_list" class="table table-striped">
+        <div class="container">
+            <h1>Activity Reports</h1>
+            <table class="table table-striped">
                 <thead>
                     <tr>
-                        <!-- Select All Checkbox -->
-                        <th class="djn-checkbox-select-all" tabindex="0" rowspan="1" colspan="1">
-                            <div class="text">
-                                <span>
-                                    <input type="checkbox" id="action-toggle"
-                                        aria-label="Select all objects on this page for an action">
-                                </span>
-                            </div>
-                        </th>
-
-                        <!-- Table Header for Quarter -->
-                        <th class="sorting text-green" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Quarter</h5>
-                        </th>
-
-                        <!-- Table Header for User -->
-                        <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">User</h5>
-                        </th>
-
-                        <!-- Table Header for Designation -->
-                        <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Designation</h5>
-                        </th>
-
-                        <!-- Table Header for Activity -->
-                        <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Activity</h5>
-                        </th>
-
-                        <!-- Table Header for Actions -->
-                        <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Actions</h5>
-                        </th>
+                        <th>#</th>
+                        <th>Activity</th>
+                        <th>Report Date</th>
+                        <th>Goal Score</th>
+                        <th>Details</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for report in reports %}
-                    <tr role="row" class="{% cycle 'even' 'odd' %}">
-                        <!-- Checkbox for each row -->
-                        <td class="action-checkbox">
-                            <input type="checkbox" name="_selected_action" value="{{ report.id }}"
-                                class="action-select"
-                                aria-label="Select this object for an action - Report {{ report.id }}">
-                        </td>
-
-                        <!-- Quarter -->
-                        <th class="field-quarter">
-                            {{ report.quarter }}
-                        </th>
-
-                        <!-- User -->
-                        <td class="field-user">
-                            {{ report.user.get_full_name }}
-                        </td>
-
-                        <!-- Designation -->
-                        <td class="field-designation">
-                            {{ report.designation }}
-                        </td>
-
-                        <!-- Activity -->
-                        <td class="field-activity">
-                            {{ report.activity }}
-                        </td>
-
-                        <!-- Actions -->
-                        <td class="field-actions">
-                            <a href="{% url 'report_update' report.id %}" class="btn btn-sm btn-warning">Edit</a>
-                            <a href="{% url 'report_detail' report.id %}" class="btn btn-sm btn-info">View</a>
-                        </td>
-                    </tr>
-                    {% empty %}
+                    {% for activity in activities %}
                     <tr>
-                        <td colspan="6" class="text-center">
-                            No reports found.
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ activity.name }}</td>
+                        <td>
+                            {% with reports|get_by_attribute:"activity_id" activity.id as report %}
+                            {% if report and report.status == 1 %}
+                                {{ report.report_date }}
+                            {% else %}
+                                <form method="post" action="{% url 'submit_report' activity.id %}">
+                                    {% csrf_token %}
+                                    {{ form.report_date }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if report and report.status == 1 %}
+                                {{ report.goal_score }}
+                            {% else %}
+                                {{ form.goal_score }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if report and report.status == 1 %}
+                                {{ report.report_details }}
+                            {% else %}
+                                {{ form.report_details }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if report and report.status == 1 %}
+                                <span class="badge bg-success">Submitted</span>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

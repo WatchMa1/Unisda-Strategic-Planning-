@@ -1,10 +1,10 @@
 from django.urls import path
 from .views import (
-    AchievementCreateView, AchievementDeleteView, AchievementDetailView, AchievementListView, AchievementUpdateView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
+    ActivityPlanningCreateView, ActivityPlanningUpdateView, ActivityReportView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
     StrategicObjectiveListView, StrategicObjectiveDetailView, StrategicObjectiveCreateView, StrategicObjectiveUpdateView, StrategicObjectiveDeleteView,
     DesignationListView, DesignationDetailView, DesignationCreateView, DesignationUpdateView, DesignationDeleteView,
     KPIListView, KPIDetailView, KPICreateView, KPIUpdateView, KPIDeleteView,
-    ActivityListView, ActivityDetailView, ActivityCreateView, ActivityUpdateView, ActivityDeleteView, UserCreateView, UserListView, UserUpdateView
+    ActivityListView, ActivityDetailView, ActivityCreateView, ActivityUpdateView, ActivityDeleteView, SubmitReportView, UserCreateView, UserListView, UserUpdateView
 )
 
 urlpatterns = [
@@ -41,11 +41,6 @@ urlpatterns = [
     path('activities/<int:pk>/update/', ActivityUpdateView.as_view(), name='activity_update'),
     path('activities/<int:pk>/delete/', ActivityDeleteView.as_view(), name='activity_delete'),
     
-    path('achievements/', AchievementListView.as_view(), name='achievement_list'),
-    path('achievements/<int:pk>/', AchievementDetailView.as_view(), name='achievement_detail'),
-    path('achievements/create/', AchievementCreateView.as_view(), name='achievement_create'),
-    path('achievements/<int:pk>/update/', AchievementUpdateView.as_view(), name='achievement_update'),
-    path('achievements/<int:pk>/delete/', AchievementDeleteView.as_view(), name='achievement_delete'),
     
     path('roles/', RoleListView.as_view(), name='role_list'),
     path('roles/<int:pk>/', RoleDetailView.as_view(), name='role_detail'),
@@ -71,9 +66,13 @@ urlpatterns = [
     # Planning Views
     path('main-activity/create/<int:kpi_id>/', MainActivityCreateView.as_view(), name='main_activity_create'),
     path('main-activity/update/', MainActivityUpdateView.as_view(), name='main_activity_update'),
+    path('sub-activity/create//<int:kpi_id>/<int:main_activity_id>/', ActivityPlanningCreateView.as_view(), name='sub_activity_create'),
+    path('sub-activity/create//<int:kpi_id>/', ActivityPlanningCreateView.as_view(), name='sub_activity_create_without_main'),
+    path('sub-activity/update/', ActivityPlanningUpdateView.as_view(), name='sub_activity_update'),
     
     path('themes/', StrategicThemePlanningListView.as_view(), name='theme_planning_list'),
     path('themes/<int:theme_id>/objectives/', StrategicObjectivePlanningListView.as_view(), name='objective_planning_list'),
     path('objectives/<int:strategic_objective_id>/kpis/', KPIPlanningListView.as_view(), name='kpi_planning_list'),
-
+    path('reports/', ActivityReportView.as_view(), name='report_list'),
+    path('reports/submit/<int:pk>/', SubmitReportView.as_view(), name='submit_report'),
 ]

@@ -116,7 +116,7 @@ class Activity(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    start_date = models.DateField(null=True)
+    start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField()
     kpi = models.ForeignKey('KPI', on_delete=models.CASCADE, related_name="activities")
     main_activity = models.ForeignKey(MainActivity, on_delete=models.CASCADE, null=True, 
@@ -129,20 +129,15 @@ class Activity(models.Model):
         return self.name
 
 
-
-class Achievement(models.Model):
-    goal_score = models.CharField(max_length=10, choices=GoalScoreEnum.choices)
-    color_code = models.CharField(max_length=10, choices=ColorCodeEnum.choices)
-    explanation = models.TextField()
-    activity = models.OneToOneField(Activity, on_delete=models.CASCADE, related_name="achievement")
-
 class Report(models.Model):
-    quarter = models.CharField(max_length=10, choices=QuaterEnum.choices)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    report_date= models.DateField(default=now, null=True)
     designation = models.ForeignKey(Designation, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="reports")
+    goal_score = models.CharField(max_length=10, choices=GoalScoreEnum.choices)
     report_details = models.TextField()
-
+    actual_spent = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.IntegerField(default=0)
     def __str__(self):
         return f"Report by {self.user.name} for {self.quarter}"
 

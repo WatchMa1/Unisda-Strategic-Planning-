@@ -60,6 +60,11 @@
             <div class="app-menu">
                 <ul class="accordion-menu">
                     <li class="sidebar-title">Strategic Themes</li>
+                    <li>
+                        <a href="{% url 'report_list'%}">
+                            <i class="material-icons-two-tone"></i> Reports
+                        </a>
+                    </li>
                     {% for theme in strategic_themes %}
                     <li>
                         <a href="{% url 'objective_planning_list' theme.id %}">
@@ -83,9 +88,6 @@
                             </li>
                             <li>
                                 <a href="{% url 'activity_list' %}">Activities</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'achievement_list' %}">Achievements</a>
                             </li>
                             <li>
                                 <a href="{% url 'designation_list' %}">Designation</a>
@@ -261,6 +263,7 @@
             $('.form-control').select2();
         });
     </script>
+    
 </body>
 
 </html>
