@@ -21,3 +21,4 @@ def strategic_objectives_context(request):
     return {
         'strategic_objectives': objectives,
     }
+    

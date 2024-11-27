@@ -9,17 +9,11 @@ class QuaterEnum(models.TextChoices):
     THIRD = '3rd', '3rd'
     FOURTH = '4th', '4th'
 
-class ColorCodeEnum(models.TextChoices):
-    GREEN = 'green', 'Green'
-    ORANGE = 'orange', 'Orange'
-    YELLOW = 'yellow', 'Yellow'
-    RED = 'red', 'Red'
-
 class GoalScoreEnum(models.TextChoices):
-    FULL = '100', '100'
-    HIGH = '50-99', '50-99'
-    MEDIUM = '1-49', '1-49'
-    LOW = '0', '0'
+    GREEN =  'green', 'Completed'
+    ORANGE = 'orange','Progressing' 
+    YELLOW = 'yellow', 'Early Stage' 
+    RED = 'red','No Activity'
 
 # Models
 class Designation(models.Model):
@@ -130,13 +124,13 @@ class Activity(models.Model):
 
 
 class Report(models.Model):
-    report_date= models.DateField(default=now, null=True)
+    report_date= models.DateField(null=True)
     designation = models.ForeignKey(Designation, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="reports")
-    goal_score = models.CharField(max_length=10, choices=GoalScoreEnum.choices)
+    goal_score = models.CharField(max_length=20, choices=GoalScoreEnum.choices)
     report_details = models.TextField()
-    actual_spent = models.DecimalField(max_digits=12, decimal_places=2)
+    actual_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     status = models.IntegerField(default=0)
     def __str__(self):
         return f"Report by {self.user.name} for {self.quarter}"

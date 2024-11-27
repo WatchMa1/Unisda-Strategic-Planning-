@@ -1,3 +1,4 @@
+from datetime import datetime 
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -14,7 +15,10 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
+from collections import defaultdict
 
+from django.http import FileResponse
+from strategic_planning.utils.pdf_generator import generate_pdf
 # Create your views here.
 
 class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
@@ -38,7 +42,7 @@ class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
 
         return super().dispatch(request, *args, **kwargs)
 
-class HomeView(View):
+class HomeView(RoleAndDesignationRequiredMixin, View):
     def get(self, request):
         return render(request, 'home.html')
 
@@ -97,7 +101,7 @@ class StrategicObjectiveDetailView(DetailView):
 
 class StrategicObjectiveCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = StrategicObjective
-    required_designation = 'Technical'
+    required_role = 'Admin'
     form_class = StrategicObjectiveForm
     template_name = 'forms.html'
     success_url = reverse_lazy('strategic_objectives')
@@ -269,28 +273,12 @@ class DesignationUpdateView(UpdateView):
         context['page_name'] = 'designation_update'  # Set this for conditional rendering
         return context
 
-class ReportListView(ListView):
-    model = Report
-    template_name = 'reports.html'
-    context_object_name = 'reports'
-
 
 class ReportDetailView(DetailView):
     model = Report
     template_name = 'report_detail.html'
     context_object_name = 'report'
 
-
-class ReportCreateView(CreateView):
-    model = Report
-    form_class = ReportForm
-    template_name = 'forms.html'
-    success_url = reverse_lazy('report_list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_name'] = 'report_create'  # Set this for conditional rendering
-        return context
 
 
 class ReportUpdateView(UpdateView):
@@ -318,7 +306,7 @@ class RoleDetailView(DetailView):
 
 class RoleCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = Role
-    required_designation = "Technical"
+    required_role = "Admin"
     form_class = RoleForm
     template_name = 'forms.html'
     success_url = reverse_lazy('role_list')
@@ -442,11 +430,10 @@ class StrategicObjectivePlanningListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         theme_id = self.kwargs.get('theme_id')
-        
         # Retrieve the StrategicTheme object based on the theme_id
-        theme = get_object_or_404(StrategicTheme, id=theme_id)
-        
+        theme = get_object_or_404(StrategicTheme, id=theme_id) 
         context['theme'] = theme
+        context['strategic_objectives'] = self.get_queryset() 
         context['page_name'] = 'objective_planning_list'  
         return context
     
@@ -457,8 +444,9 @@ class StrategicObjectivePlanningListView(ListView):
         strategic_theme__id=theme_id,
         designation=user_designation
         )
-        print(queryset.query)  # Log the SQL query for debugging
+
         return queryset
+    
 class KPIPlanningListView(ListView):
     model = KPI
     template_name = 'planning.html'  # Replace with your template name
@@ -600,16 +588,33 @@ class ReportCreateView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         form.instance.designation = self.request.user.designation  # Assuming `designation` is a field in the User model
         return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kpi_id = self.kwargs.get('kpi_id')
+        
+        
+        context['page_name'] = 'main_activity_create'  # Set this for conditional rendering
+        return context
+    
 class ReportListView(TemplateView):
     template_name = 'reports.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Pass activities and reports to the template
-        context['activities'] = Activity.objects.all()
-        context['reports'] = Report.objects.filter(designation=self.request.user.designation)
+        # Get activities and reports
+        activities = Activity.objects.all()
+        reports = Report.objects.filter(designation=self.request.user.designation)
+
+        # Create a mapping of activity IDs to their reports
+        reports_by_activity = {report.activity_id: report for report in reports}
+
+        # Pass activities, reports, and the form to the context
+        context['activities'] = activities
+        context['reports_by_activity'] = reports_by_activity  # Pre-filtered reports by activity ID
         context['form'] = ReportForm()
         return context
+    
 class ActivityReportView(TemplateView):
     template_name = 'report_list.html'
 
@@ -619,22 +624,216 @@ class ActivityReportView(TemplateView):
         context['reports'] = Report.objects.filter(designation=self.request.user.designation)
         context['form'] = ReportForm()
         return context
+
 class SubmitReportView(View):
-    def post(self, request, pk):
-        activity = get_object_or_404(Activity, pk=pk)
-        form = ReportForm(request.POST)
+    def post(self, request, activity_id):
+        # Fetch the activity object
+        activity = get_object_or_404(Activity, id=activity_id)
+
+        # Get or create the report object for the user and activity
+        report, created = Report.objects.get_or_create(
+            user=request.user,
+            activity=activity,
+            defaults={'designation': request.user.designation}
+        )
+
+        if report.status == 1:
+            messages.error(request, "This report has already been submitted.")
+            return redirect('report_list')  
+
+        # Bind the form to the POST data
+        form = ReportForm(request.POST, instance=report)
         if form.is_valid():
-            # Create or update the report for this activity
-            report, created = Report.objects.update_or_create(
-                user=request.user,
-                activity=activity,
-                defaults={
-                    'report_date': form.cleaned_data['report_date'],
-                    'goal_score': form.cleaned_data['goal_score'],
-                    'report_details': form.cleaned_data['report_details'],
-                    'status': 1,  # Mark as submitted
-                },
-            )
-            return redirect('report_list')  # Replace with the correct name of the activity list view
-        return redirect('report_list')
+            form.instance.designation = self.request.user.designation
+            form.save()
+            report.status = 1  # Mark report as submitted
+            report.save()
+            messages.success(request, "Report submitted successfully.")
+        else:
+            messages.error(request, "There was an error submitting the report.")
+
+        # Redirect back to the report list page
+        return redirect('report_list') 
+
+class FullReportView(TemplateView):
+    template_name = "reports_templates/full-reports.html"  # The HTML template for the table
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get the logged-in user 
+        user = self.request.user
+        quarter = ''
+        current_month = datetime.now().month
+
+        # Determine the quarter based on the current month
+        if 1 <= current_month <= 3:
+            quarter = "First"
+        elif 4 <= current_month <= 6:
+            quarter = "Second"
+        elif 7 <= current_month <= 9:
+            quarter = "Third"
+        elif 10 <= current_month <= 12:
+            quarter = "Fourth"
+            
+        context["request"] = self.request.user.designation.name
+        context["user"] = self.request.user
+        context["quarter"] = quarter
+        # Fetch all themes
+        themes = StrategicTheme.objects.all()
+
+        # Create structured data for the table
+        data = []
+        for theme in themes:
+            objectives = theme.objectives.all()
+            for objective in objectives:
+                kpis = objective.kpis.all()
+                for kpi in kpis:
+                    main_activities = kpi.main_activities.all()
+                    for main_activity in main_activities:
+                        activities = main_activity.activities.all()
+                        for activity in activities:
+                            # Fetch the report if available
+                            report = activity.reports.filter(user=user).first()
+
+                            data.append({
+                                "theme": theme.theme_name,
+                                "objective": objective.objective_name,
+                                "kpi": kpi.name,
+                                "main_activity": main_activity.name,
+                                "activity": activity.name,
+                                "status": report.goal_score if report else "No Report",
+                                "q1": "",  # Leave empty for now
+                                "report_details": report.report_details if report else "No details",
+                            })
+
+        context["data"] = data
+        return context
+class DepartmentalReportView(TemplateView):
+    template_name = "reports_templates/departmental-reports.html"  # The HTML template for the table
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get the logged-in user 
+        user = self.request.user
+        quarter=''
+        current_month = datetime.now().month
+
+        # Determine the quarter based on the current month
+        if 1 <= current_month <= 3:
+            quarter = "First"
+        elif 4 <= current_month <= 6:
+            quarter = "Second"
+        elif 7 <= current_month <= 9:
+            quarter = "Third"
+        elif 10 <= current_month <= 12:
+            quarter = "Fourth"
+            
+        context["request"] = self.request.user.designation.name
+        context["user"] = self.request.user
+        context["quarter"] = quarter
+        # Fetch all themes
+        themes = StrategicTheme.objects.all()
+
+        # Create structured data for the table
+        data = []
+        for theme in themes:
+            objectives = theme.objectives.filter(designation__users=user)
+            for objective in objectives:
+                kpis = objective.kpis.all()
+                for kpi in kpis:
+                    main_activities = kpi.main_activities.all()
+                    for main_activity in main_activities:
+                        activities = main_activity.activities.all()
+                        for activity in activities:
+                            # Fetch the report if available
+                            report = activity.reports.filter(user=user).first()
+                            
+                            
+
+                            data.append({
+                                "theme": theme.theme_name,
+                                "objective": objective.objective_name,
+                                "kpi": kpi.name,
+                                "main_activity": main_activity.name,
+                                "activity": activity.name,
+                                "status": report.goal_score if report else "No Report",
+                                "q1": "",  # Leave empty for now
+                                "report_details": report.report_details if report else "No details",
+                            })
+
+        context["data"] = data
+        return context
+
+
+class AdminReportsListView(ListView):
+    model = Designation
+    template_name = 'admin-reports.html'  # Update with actual template path
+    context_object_name = 'designations'
     
+class AdminReportsListView(ListView):
+    model = Designation
+    template_name = 'admin-reports.html'  
+    def get_queryset(self):
+        queryset = Designation.objects.all()
+        return queryset
+class AdminReportListView(TemplateView):
+    template_name = 'reports.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get activities and reports
+        activities = Activity.objects.all()
+        reports = Report.objects.filter(designation=self.request.user.designation)
+
+        # Create a mapping of activity IDs to their reports
+        reports_by_activity = {report.activity_id: report for report in reports}
+
+        # Pass activities, reports, and the form to the context
+        context['activities'] = activities
+        context['reports_by_activity'] = reports_by_activity  # Pre-filtered reports by activity ID
+        context['form'] = ReportForm()
+        return context
+    
+    
+def download_pdf(request):
+    themes = StrategicTheme.objects.prefetch_related(
+        'objectives__kpis__main_activities__activities'
+    ).all()
+
+    data = []
+    for theme in themes:
+        theme_row_span = 0
+        objectives_data = []
+        for obj in theme.objectives.all():
+            objective_row_span = 0
+            kpis_data = []
+            for kpi in obj.kpis.all():
+                kpi_row_span = kpi.main_activities.count() or 1
+                main_activities_data = [
+                    {
+                        "main_activity": ma,
+                        "activities": ma.activities.all()
+                    } for ma in kpi.main_activities.all()
+                ]
+                kpis_data.append({
+                    "kpi": kpi,
+                    "kpi_row_span": kpi_row_span,
+                    "main_activities": main_activities_data,
+                })
+                objective_row_span += kpi_row_span
+            objectives_data.append({
+                "objective": obj,
+                "objective_row_span": objective_row_span,
+                "kpis": kpis_data,
+            })
+            theme_row_span += objective_row_span
+        data.append({
+            "theme": theme,
+            "theme_row_span": theme_row_span,
+            "objectives": objectives_data,
+        })
+    
+    # Generate the PDF
+    pdf_filename = "strategic_themes.pdf"
+    generate_pdf(data, pdf_filename)
+    return FileResponse(open(pdf_filename, 'rb'), as_attachment=True, filename=pdf_filename)

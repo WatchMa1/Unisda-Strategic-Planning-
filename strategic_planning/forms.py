@@ -146,14 +146,16 @@ class DesignationForm(forms.ModelForm):
 class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
-        fields = ['report_date', 'report_details', 'goal_score']
+        fields = ['report_date', 'report_details', 'goal_score', 'actual_spent',]
         labels = {
             'report_date': 'Report Date:',
             'report_details': 'Report Details:',
             'goal_score': 'Goal Score:',
+            'actual_spent': 'Total Spent'
         }
         widgets = {
-            'report_date': forms.Select(attrs={'class': 'form-control'}),
+            'report_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'actual_spent': forms.NumberInput(attrs={ 'class': 'form-control'}),
             'report_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'goal_score': forms.Select(attrs={'class': 'form-control'}),
         }
@@ -203,5 +205,8 @@ class UserForm(forms.ModelForm):
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
         widget=forms.EmailInput(attrs={"class": "form-control"}),
-        label="Email",
+        label="Email",)
+    password = forms.Field(
+        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        label="Password"
     )

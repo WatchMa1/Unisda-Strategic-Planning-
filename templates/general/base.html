@@ -47,61 +47,61 @@
 <body>
     <div class="app align-content-stretch d-flex flex-wrap">
         <div class="app-sidebar">
-            <div class="logo">
-                <a href="index.html" class="logo-icon"><span class="logo-text">Planning</span></a>
-                <div class="sidebar-user-switcher user-activity-online">
-                    <a href="#">
-                        <img src="../../assets/images/avatars/avatar.png">
-                        <span class="activity-indicator"></span>
-                        <span class="user-info-text">Admin<br><span class="user-state-info"></span></span>
-                    </a>
-                </div>
-            </div>
+            
             <div class="app-menu">
-                <ul class="accordion-menu">
+                <div class="logo">
+                    <i class="bx bx-menu menu-icon"></i>
+                    <span class="logo-name">CodingLab</span>
+                  </div>
+                  <ul class="accordionre-menu">
                     <li class="sidebar-title">Strategic Themes</li>
-                    <li>
-                        <a href="{% url 'report_list'%}">
-                            <i class="material-icons-two-tone"></i> Reports
+                    <li class="{% if request.resolver_match.url_name == 'report_list' %}active{% endif %}">
+                        <a href="{% url 'report_list' %}">
+                            <i class="material-icons-two-tone">insert_chart</i> Reports
                         </a>
                     </li>
                     {% for theme in strategic_themes %}
-                    <li>
+                    <li class="{% if request.resolver_match.url_name == 'objective_planning_list' and theme.id == current_theme_id %}active{% endif %}">
                         <a href="{% url 'objective_planning_list' theme.id %}">
-                            <i class="material-icons-two-tone"></i> {{ theme.theme_name }}
+                            <i class="material-icons-two-tone">folder</i> {{ theme.theme_name }}
                         </a>
                     </li>
                     {% endfor %}
                     <li>
-                      
-                        <a href=""><i class="material-icons-two-tone">star</i>Admin<i
-                                class="material-icons has-sub-menu">keyboard_arrow_right</i></a>
+                        {% if request.user.role and request.user.role.name == 'Admin' %}
+                        <a href="#">
+                            <i class="material-icons-two-tone">star</i> Admin
+                            <i class="material-icons has-sub-menu">keyboard_arrow_right</i>
+                        </a>
                         <ul class="sub-menu">
-                            <li>
-                                <a href="{% url 'strategic_themes' %}"> Strategic Themes</a>
+                            <li class="{% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}">
+                                <a href="{% url 'admin_reports' %}">Reports</a>
                             </li>
-                            <li>
+                            <li class="{% if request.resolver_match.url_name == 'strategic_themes' %}active{% endif %}">
+                                <a href="{% url 'strategic_themes' %}">Strategic Themes</a>
+                            </li>
+                            <li class="{% if request.resolver_match.url_name == 'strategic_objectives' %}active{% endif %}">
                                 <a href="{% url 'strategic_objectives' %}">Strategic Objectives</a>
                             </li>
-                            <li>
+                            <li class="{% if request.resolver_match.url_name == 'kpi_list' %}active{% endif %}">
                                 <a href="{% url 'kpi_list' %}">KPI's</a>
                             </li>
-                            <li>
-                                <a href="{% url 'activity_list' %}">Activities</a>
+                            <li class="{% if request.resolver_match.url_name == 'designation_list' %}active{% endif %}">
+                                <a href="{% url 'designation_list' %}">Departments</a>
                             </li>
-                            <li>
-                                <a href="{% url 'designation_list' %}">Designation</a>
+                            <li class="{% if request.resolver_match.url_name == 'role_list' %}active{% endif %}">
+                                <a href="{% url 'role_list' %}">Roles</a>
                             </li>
-                            <li>
-                                <a href="{% url 'role_list' %}">Assign Roles</a>
-                            </li>
-                            <li>
+                            <li class="{% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">
                                 <a href="{% url 'user_list' %}">Users</a>
                             </li>
+                            
                         </ul>
-                      
+                        {% endif %}
                     </li>
                 </ul>
+                
+                
             </div>
         </div>
         <div class="app-container">

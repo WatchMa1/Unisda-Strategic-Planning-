@@ -5,56 +5,82 @@
 <div class="card">
     <div class="card-body">
         <div class="container">
-            <h1>Activity Reports</h1>
-            <table class="table table-striped">
+            
+            <div class="example-container">
+                <div class="example-content bg-light">
+                    <div class="section-description d-flex align-items-center">
+                        <div class="section-description-content flex-grow-1">
+                            <h1>Activity Reports</h1>
+                        </div>
+                        <div class="section-description-actions">
+                            <a href="{% url 'report_department' %}" class="btn btn-dark">
+                                <i class="material-icons-outlined">file_download</i> Generate Report
+                            </a>
+                            <a href="{% url 'strategic_objective_create' %}" class="btn btn-green">
+                                <i class="material-icons"></i> Print
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped mt-5">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Activity</th>
-                        <th>Report Date</th>
-                        <th>Goal Score</th>
+                        <th>Date</th>
+                        <th>Score</th>
+                        <th>Total Spent</th>
                         <th>Details</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for activity in activities %}
+                    {% with activity.reports.all|first as report %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ activity.name }}</td>
-                        <td>
-                            {% with reports|get_by_attribute:"activity_id" activity.id as report %}
+                        <td >
                             {% if report and report.status == 1 %}
-                                {{ report.report_date }}
+                            {{ report.report_date }}
                             {% else %}
-                                <form method="post" action="{% url 'submit_report' activity.id %}">
-                                    {% csrf_token %}
-                                    {{ form.report_date }}
+                            <form method="post" action="{% url 'submit_report' activity.id %}">
+                                {% csrf_token %}
+                                {{ form.report_date }}
+                                {% endif %}
+                        </td>
+                        <td style="--dynamic-color: {% if report and report.status == 1 %}{{ report.goal_score }}{% else %}default-color{% endif %}; background-color: var(--dynamic-color);">
+                            {% if report and report.status == 1 %}
+                            {{ report.goal_score }}
+                            {% else %}
+                            {{ form.goal_score }}
                             {% endif %}
                         </td>
                         <td>
                             {% if report and report.status == 1 %}
-                                {{ report.goal_score }}
+                            {{ report.actual_spent }}
                             {% else %}
-                                {{ form.goal_score }}
+                            {{ form.actual_spent }}
                             {% endif %}
                         </td>
                         <td>
                             {% if report and report.status == 1 %}
-                                {{ report.report_details }}
+                            {{ report.report_details }}
                             {% else %}
-                                {{ form.report_details }}
+                            {{ form.report_details }}
                             {% endif %}
                         </td>
                         <td>
                             {% if report and report.status == 1 %}
-                                <span class="badge bg-success">Submitted</span>
+                            <span class="badge bg-success">Submitted</span>
                             {% else %}
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
                             {% endif %}
                         </td>
                     </tr>
+                    {% endwith %}
                     {% endfor %}
                 </tbody>
             </table>

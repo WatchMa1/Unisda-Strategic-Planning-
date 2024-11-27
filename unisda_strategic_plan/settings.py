@@ -89,7 +89,7 @@ LOGIN_URL = 'user_login'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sp_db',
+        'NAME': 'planning_db',
         'USER': 'root',
         'PASSWORD': 'kapz.kapz123',
         'HOST': 'localhost', 
