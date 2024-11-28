@@ -53,6 +53,8 @@
                                         indicate end date</a>
                                 </div>
                                 {% endif %}
+                    
+
                                 {% if page_name == 'objective_planning_list' %}
                                 <div class="container">
                                     <div class="row">
@@ -61,7 +63,7 @@
                                             <ul class="nav nav-tabs d-flex" id="objectiveTabs" role="tablist">
                                                 {% for objective in strategic_objectives %}
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link {% if forloop.first %}active{% endif %}"
+                                                    <button class="nav-link w-100 {% if forloop.first %}active{% endif %}"
                                                         id="objective-{{ objective.id }}-tab" data-bs-toggle="tab"
                                                         data-bs-target="#objective-{{ objective.id }}" type="button"
                                                         role="tab" aria-controls="objective-{{ objective.id }}"
@@ -102,8 +104,8 @@
 
 
                                 </div>
-                                {% elif page_name == 'main_activity_create' or page_name == 'main_activity_update' %}
 
+                                {% elif page_name == 'main_activity_create' or page_name == 'main_activity_update' %}
                                 <form method="POST">
                                     {% csrf_token %}
                                     <div class="row">

@@ -11,11 +11,9 @@
         body {
             font-family: 'Times New Roman', Times, serif;
         }
-
-        .list-style-none {
+        .list-style-none{
             list-style: none;
         }
-
         .a4-page {
             width: 297mm;
             height: 210mm;
@@ -23,22 +21,17 @@
             padding: 20mm;
             background: white;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
         @media print {
             body {
                 font-family: 'Times New Roman', Times, serif;
             }
-            * {
-                -webkit-print-color-adjust: exact; /* For Safari/Chrome */
-                print-color-adjust: exact; /* For Firefox/Edge */
-            }
+
+            /* Landscape orientation for printing */
             .a4-page {
-                display: block;
                 width: 297mm;
                 height: 210mm;
                 padding: 20mm;
@@ -47,6 +40,7 @@
                 page-break-after: always;
             }
 
+            /* Adjust table and layout styles as needed */
             .table-sm td, .table-sm th {
                 padding: 0.1rem;
             }
@@ -54,17 +48,14 @@
             th, td, tr {
                 border: 2px solid #000000;
             }
-
             .table-container {
                 page-break-inside: avoid;
             }
-
-            /* Hide the print button when printing */
-            .print-button {
-                display: none;
-            }
         }
-
+        body > *:not(.a4-page) {
+            display: none;
+        }
+        
         @media screen {
             .a4-page {
                 box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -85,7 +76,7 @@
 
 <body>
     <div class="text-end mb-2">
-        <button class="btn btn-dark print-button" onclick="window.print()">Print Report</button>
+        <button class="btn btn-primary print-button" onclick="window.print()">Print Report</button>
     </div>
     <div class="a4-page">
         <div class="text-center mb-4 position-relative">
@@ -93,21 +84,21 @@
                 <img src="/static/assets/images/sda.png" alt="Logo" width="80px">
             </div>
             <h4 class="text-uppercase fw-bold">University Seventh Day Adventist Church</h4>
-            <h4 class="text-uppercase">{{department}} Department</h4>
+            <h4 class="text-uppercase">Church Report</h4>
             <h6>{{year}} {{quarter}} Report</h6>
         </div>
 
         <div class="table-container mt-3">
             <table class="table table-bordered border-dark table-sm">
                 <thead>
-                    <tr>
+                    <tr>                        
                         <th>Strategic Theme</th>
                         <th>Strategic Objective</th>
                         <th>KPI</th>
                         <th>Main Activity</th>
                         <th>Activity</th>
-                        <th>Score</th>
-                      
+                        <th>Status</th>
+                 
                         <th>Report Details</th>
                     </tr>
                 </thead>
@@ -116,23 +107,26 @@
                     <tr>
                         <td>{{ row.theme }}</td>
                         <td>{{ row.objective }}</td>
-                        <td>{{ row.kpi }}</td>
+                        <td>{{ row.kpi }}
+                          
+                        </td>
                         <td>{{ row.main_activity }}</td>
                         <td>{{ row.activity }}</td>
                         <td style="--dynamic-color: {{ row.status }}; background-color: var(--dynamic-color);">
                         </td>
+                        
                         <td>{{ row.report_details }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
 
-        <div class="row ">
+        </div>
+        <div class="row">
             <ul class="sign list-style-none">
-                <li class="box">Prepared by</li>
-                <li class="box">{{ user.first_name }} {{ user.last_name }}</li>
-                <li class="box">{{ department }} Department</li>
+                <li class="box"></li>
+                <li class="box">Church Report</li>
+                <li class="box"></li>
             </ul>
         </div>
     </div>

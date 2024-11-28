@@ -1,4 +1,5 @@
 from datetime import datetime 
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -397,7 +398,7 @@ class LoginView(View):
             else:
                 messages.error(request, "Invalid credentials")
         else:
-            messages.error(request, "Please correct the errors below.")
+            messages.error(request, "Please enter correct email and password.")
         return render(request, self.template_name, {"form": form})
 
 def permission_denied(request, exception=None):
@@ -708,33 +709,43 @@ class FullReportView(TemplateView):
 
         context["data"] = data
         return context
-class DepartmentalReportView(TemplateView):
-    template_name = "reports_templates/departmental-reports.html"  # The HTML template for the table
+    
+
+class GenerateReportView(TemplateView):
+    template_name = 'reports.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get the logged-in user 
+        context['page_name'] = 'generate_department_report'
+        
+        # Provide a list of years (e.g., last 10 years)
+        current_year = datetime.now().year
+        context['years'] = range(current_year, current_year - 10, -1)
+        
+        return context
+class GenerateChurchReportsView(TemplateView):
+    template_name = 'admin-full-reports.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Provide a list of years (e.g., last 10 years)
+        current_year = datetime.now().year
+        context['years'] = range(current_year, current_year - 10, -1)
+        
+        return context
+
+class DepartmentalReportView(TemplateView):
+    template_name = "reports_templates/departmental-reports.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         user = self.request.user
-        quarter=''
-        current_month = datetime.now().month
+        quarter = self.request.GET.get("report_period", "")
+        year = self.request.GET.get("year", "")
+        department = user.designation.name
+        # Determine date range for the selected quarter
+        start_date, end_date = self.get_date_range(year, quarter)
 
-        # Determine the quarter based on the current month
-        if 1 <= current_month <= 3:
-            quarter = "First"
-        elif 4 <= current_month <= 6:
-            quarter = "Second"
-        elif 7 <= current_month <= 9:
-            quarter = "Third"
-        elif 10 <= current_month <= 12:
-            quarter = "Fourth"
-            
-        context["request"] = self.request.user.designation.name
-        context["user"] = self.request.user
-        context["quarter"] = quarter
-        # Fetch all themes
         themes = StrategicTheme.objects.all()
-
-        # Create structured data for the table
         data = []
         for theme in themes:
             objectives = theme.objectives.filter(designation__users=user)
@@ -745,37 +756,316 @@ class DepartmentalReportView(TemplateView):
                     for main_activity in main_activities:
                         activities = main_activity.activities.all()
                         for activity in activities:
-                            # Fetch the report if available
-                            report = activity.reports.filter(user=user).first()
-                            
-                            
+                            # Fetch the report within the selected period
+                            report = activity.reports.filter(
+                                 report_date__range=(start_date, end_date)
+                            ).first()
 
-                            data.append({
-                                "theme": theme.theme_name,
-                                "objective": objective.objective_name,
-                                "kpi": kpi.name,
-                                "main_activity": main_activity.name,
-                                "activity": activity.name,
-                                "status": report.goal_score if report else "No Report",
-                                "q1": "",  # Leave empty for now
-                                "report_details": report.report_details if report else "No details",
-                            })
-
+                            # Only append data if a report exists
+                            if report:
+                                data.append({
+                                    "theme": theme.theme_name,
+                                    "objective": objective.objective_name,
+                                    "kpi": kpi.name,
+                                    "main_activity": main_activity.name,
+                                    "activity": activity.name,
+                                    "status": report.goal_score,
+                                    "report_details": report.report_details,
+                                })
+        context["department"] = department
+        context["quarter"] = quarter
+        context["year"] = year
         context["data"] = data
         return context
+
+    def get_date_range(self, year, quarter):
+        """Returns the start and end dates for the given year and quarter."""
+        if not year.isdigit():
+            year = datetime.now().year  # Default to current year
+        year = int(year)
+
+        if quarter == "First Quarter":
+            return f"{year}-01-01", f"{year}-03-31"
+        elif quarter == "Second Quarter":
+            return f"{year}-04-01", f"{year}-06-30"
+        elif quarter == "Third Quarter":
+            return f"{year}-07-01", f"{year}-09-30"
+        elif quarter == "Fourth Quarter":
+            return f"{year}-10-01", f"{year}-12-31"
+        elif quarter == "Full Year":
+            return f"{year}-01-01", f"{year}-12-31"
+        else:
+            return f"{year}-01-01", f"{year}-12-31"  # Default to full year
+        
+class AdminDepartmentalReportView(TemplateView):
+    template_name = "reports_templates/admin-department-report.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        quarter = self.request.GET.get("report_period", "")
+        year = self.request.GET.get("year", "")
+        designation_id = self.request.GET.get("designation_id", "")
+        designation_name = self.request.GET.get("designation_name", "")
+        print(f"Designation ID: {designation_id}, Designation Name: {designation_name}")
+
+        # Determine date range for the selected quarter
+        start_date, end_date = self.get_date_range(year, quarter)
+        themes = StrategicTheme.objects.all()
+        data = []
+        for theme in themes:
+            objectives = theme.objectives.filter(
+                Q(designation__id=designation_id) if designation_id else Q()
+            )
+            for objective in objectives:
+                kpis = objective.kpis.all()
+                for kpi in kpis:
+                    main_activities = kpi.main_activities.all()
+                    for main_activity in main_activities:
+                        activities = main_activity.activities.all()
+                        for activity in activities:
+                            # Fetch the report within the selected period
+                            report = activity.reports.filter(
+                                 report_date__range=(start_date, end_date)
+                            ).first()
+
+                            # Only append data if a report exists
+                            if report:
+                                data.append({
+                                    "theme": theme.theme_name,
+                                    "objective": objective.objective_name,
+                                    "kpi": kpi.name,
+                                    "main_activity": main_activity.name,
+                                    "activity": activity.name,
+                                    "status": report.goal_score,
+                                    "report_details": report.report_details,
+                                })
+        context["name"] = designation_name                       
+        context["quarter"] = quarter
+        context["year"] = year
+        context["data"] = data
+        return context
+
+    def get_date_range(self, year, quarter):
+        """Returns the start and end dates for the given year and quarter."""
+        if not year.isdigit():
+            year = datetime.now().year  # Default to current year
+        year = int(year)
+
+        if quarter == "First Quarter":
+            return f"{year}-01-01", f"{year}-03-31"
+        elif quarter == "Second Quarter":
+            return f"{year}-04-01", f"{year}-06-30"
+        elif quarter == "Third Quarter":
+            return f"{year}-07-01", f"{year}-09-30"
+        elif quarter == "Fourth Quarter":
+            return f"{year}-10-01", f"{year}-12-31"
+        elif quarter == "Full Year":
+            return f"{year}-01-01", f"{year}-12-31"
+        else:
+            return f"{year}-01-01", f"{year}-12-31"  # Default to full year
+class AdminChurchReportView(TemplateView):
+    template_name = "reports_templates/admin-church-report.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        quarter = self.request.GET.get("report_period", "")
+        year = self.request.GET.get("year", "")
+
+        # Determine date range for the selected quarter
+        start_date, end_date = self.get_date_range(year, quarter)
+        themes = StrategicTheme.objects.all()
+        data = []
+        for theme in themes:
+            objectives = theme.objectives.all()
+            for objective in objectives:
+                kpis = objective.kpis.all()
+                for kpi in kpis:
+                    main_activities = kpi.main_activities.all()
+                    for main_activity in main_activities:
+                        activities = main_activity.activities.all()
+                        for activity in activities:
+                            # Fetch the report within the selected period
+                            report = activity.reports.filter(
+                                 report_date__range=(start_date, end_date)
+                            ).first()
+
+                            # Only append data if a report exists
+                            if report:
+                                data.append({
+                                    "theme": theme.theme_name,
+                                    "objective": objective.objective_name,
+                                    "kpi": kpi.name,
+                                    "main_activity": main_activity.name,
+                                    "activity": activity.name,
+                                    "status": report.goal_score,
+                                    "report_details": report.report_details,
+                                })
+                                                    
+        context["quarter"] = quarter
+        context["year"] = year
+        context["data"] = data
+        return context
+
+    def get_date_range(self, year, quarter):
+        """Returns the start and end dates for the given year and quarter."""
+        if not year.isdigit():
+            year = datetime.now().year  # Default to current year
+        year = int(year)
+
+        if quarter == "First Quarter":
+            return f"{year}-01-01", f"{year}-03-31"
+        elif quarter == "Second Quarter":
+            return f"{year}-04-01", f"{year}-06-30"
+        elif quarter == "Third Quarter":
+            return f"{year}-07-01", f"{year}-09-30"
+        elif quarter == "Fourth Quarter":
+            return f"{year}-10-01", f"{year}-12-31"
+        elif quarter == "Full Year":
+            return f"{year}-01-01", f"{year}-12-31"
+        else:
+            return f"{year}-01-01", f"{year}-12-31"  # Default to full year
+
+# class DepartmentalReportView(TemplateView):
+#     template_name = "reports_templates/departmental-reports.html"
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+        
+#         # Get year and quarter from GET parameters
+#         year = self.request.GET.get('year')
+#         report_period = self.request.GET.get('report_period')
+
+#         # Determine the start and end months of the selected quarter
+#         quarters = {
+#             "First Quarter": (1, 3),
+#             "Second Quarter": (4, 6),
+#             "Third Quarter": (7, 9),
+#             "Fourth Quarter": (10, 12),
+#             "Full Year": (1, 12)
+#         }
+#         start_month, end_month = quarters.get(report_period, (1, 12))
+
+#         # Calculate the start and end dates for the selected period
+#         if year:
+#             start_date = datetime(int(year), start_month, 1)
+#             end_date = datetime(int(year), end_month, 1).replace(day=31)  # Safely use last day
+#         else:
+#             # Default to the current quarter if no year/period is selected
+#             year = datetime.now().year
+#             current_month = datetime.now().month
+#             start_month, end_month = quarters.get(report_period, (1, 12))
+#             start_date = datetime(year, start_month, 1)
+#             end_date = datetime(year, end_month, 31)
+
+#         # Filter logic
+#         user = self.request.user
+#         themes = StrategicTheme.objects.all()
+
+#         # Create structured data for the table
+#         data = []
+#         for theme in themes:
+#             objectives = theme.objectives.filter(designation__users=user)
+#             for objective in objectives:
+#                 kpis = objective.kpis.all()
+#                 for kpi in kpis:
+#                     main_activities = kpi.main_activities.all()
+#                     for main_activity in main_activities:
+#                         activities = main_activity.activities.all()
+#                         for activity in activities:
+#                             # Fetch the report if available and filter by date
+#                             report = activity.reports.filter(
+#                                 user=user,
+#                                 report_date__gte=start_date,
+#                                 report_date__lte=end_date
+#                             ).first()
+
+#                             data.append({
+#                                 "theme": theme.theme_name,
+#                                 "objective": objective.objective_name,
+#                                 "kpi": kpi.name,
+#                                 "main_activity": main_activity.name,
+#                                 "activity": activity.name,
+#                                 "status": report.goal_score if report else "red",
+#                                 "q1": "",  # Leave empty for now
+#                                 "report_details": report.report_details if report else "No details",
+#                             })
+
+#         context["data"] = data
+#         context["year"] = year
+#         context["report_period"] = report_period
+#         context["quarter"] = report_period.split()[0] if report_period else "Full Year"
+#         return context
+
+    
+# class DepartmentalReportView(TemplateView):
+#     template_name = "reports_templates/departmental-reports.html"  # The HTML template for the table
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         # Get the logged-in user 
+#         user = self.request.user
+#         quarter=''
+#         current_month = datetime.now().month
+
+#         # Determine the quarter based on the current month
+#         if 1 <= current_month <= 3:
+#             quarter = "First"
+#         elif 4 <= current_month <= 6:
+#             quarter = "Second"
+#         elif 7 <= current_month <= 9:
+#             quarter = "Third"
+#         elif 10 <= current_month <= 12:
+#             quarter = "Fourth"
+            
+#         context["request"] = self.request.user.designation.name
+#         context["user"] = self.request.user
+#         context["quarter"] = quarter
+#         # Fetch all themes
+#         themes = StrategicTheme.objects.all()
+
+#         # Create structured data for the table
+#         data = []
+#         for theme in themes:
+#             objectives = theme.objectives.filter(designation__users=user)
+#             for objective in objectives:
+#                 kpis = objective.kpis.all()
+#                 for kpi in kpis:
+#                     main_activities = kpi.main_activities.all()
+#                     for main_activity in main_activities:
+#                         activities = main_activity.activities.all()
+#                         for activity in activities:
+#                             # Fetch the report if available
+#                             report = activity.reports.filter(user=user).first()
+                            
+                            
+
+#                             data.append({
+#                                 "theme": theme.theme_name,
+#                                 "objective": objective.objective_name,
+#                                 "kpi": kpi.name,
+#                                 "main_activity": main_activity.name,
+#                                 "activity": activity.name,
+#                                 "status": report.goal_score if report else "No Report",
+#                                 "q1": "",  # Leave empty for now
+#                                 "report_details": report.report_details if report else "No details",
+#                             })
+
+#         context["data"] = data
+#         return context
 
 
 class AdminReportsListView(ListView):
     model = Designation
     template_name = 'admin-reports.html'  # Update with actual template path
-    context_object_name = 'designations'
+    context_object_name = 'departments'
     
-class AdminReportsListView(ListView):
-    model = Designation
-    template_name = 'admin-reports.html'  
-    def get_queryset(self):
-        queryset = Designation.objects.all()
-        return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Generate a range of years (e.g., last 10 years)
+        current_year = datetime.now().year
+        context['years'] = range(current_year, current_year - 5, -1)
+        return context
+    
 class AdminReportListView(TemplateView):
     template_name = 'reports.html'
 

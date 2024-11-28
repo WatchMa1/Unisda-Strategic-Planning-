@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    ActivityPlanningCreateView, ActivityPlanningUpdateView, ActivityReportView, AdminReportListView, AdminReportsListView, DepartmentalReportView, FullReportView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
+    ActivityPlanningCreateView, ActivityPlanningUpdateView, ActivityReportView, AdminChurchReportView, AdminDepartmentalReportView, AdminReportListView, AdminReportsListView, DepartmentalReportView, FullReportView, GenerateChurchReportsView, GenerateReportView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
     StrategicObjectiveListView, StrategicObjectiveDetailView, StrategicObjectiveCreateView, StrategicObjectiveUpdateView, StrategicObjectiveDeleteView,
     DesignationListView, DesignationDetailView, DesignationCreateView, DesignationUpdateView, DesignationDeleteView,
     KPIListView, KPIDetailView, KPICreateView, KPIUpdateView, KPIDeleteView, download_pdf,
@@ -77,10 +77,13 @@ urlpatterns = [
     path('reports/submit/<int:activity_id>/', SubmitReportView.as_view(), name='submit_report'),
     
     # Reporting 
-    path("admin-departmental-report/", DepartmentalReportView.as_view(), name="report_department"),
+    path('generate-report/', GenerateReportView.as_view(), name='generate_report'),
+    path('generate-church-report/', GenerateChurchReportsView.as_view(), name='generate_church_report'),
+    path("departmental-report/", DepartmentalReportView.as_view(), name="report_department"),
+    path("admin-departmental-report/", AdminDepartmentalReportView.as_view(), name="admin_department_report"),
+    path("admin-church-report/", AdminChurchReportView.as_view(), name="admin_church_report"),
     path("full-report/", FullReportView.as_view(), name="report_full"),
     path('admin-report/', AdminReportsListView.as_view(), name='admin_reports'),
-    path('admin-department/<int:pk>/report/', AdminReportListView.as_view(), name='admin_department_report'),  # Placeholder view
     
     path('download-pdf/', download_pdf, name='download_pdf'),
 ]
