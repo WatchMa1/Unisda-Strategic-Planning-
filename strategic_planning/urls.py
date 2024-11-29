@@ -1,6 +1,7 @@
 from django.urls import path
+from django.contrib.auth.views import LogoutView
 from .views import (
-    ActivityPlanningCreateView, ActivityPlanningUpdateView, ActivityReportView, AdminChurchReportView, AdminDepartmentalReportView, AdminReportListView, AdminReportsListView, DepartmentalReportView, FullReportView, GenerateChurchReportsView, GenerateReportView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
+    ActivityPlanningCreateView, ActivityPlanningUpdateView, ActivityReportView, AdminChurchReportView, AdminDepartmentalReportView, AdminReportListView, AdminReportsListView, DepartmentalReportView, FullReportView, GenerateChurchReportsView, GenerateReportView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, ScoreCardListView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
     StrategicObjectiveListView, StrategicObjectiveDetailView, StrategicObjectiveCreateView, StrategicObjectiveUpdateView, StrategicObjectiveDeleteView,
     DesignationListView, DesignationDetailView, DesignationCreateView, DesignationUpdateView, DesignationDeleteView,
     KPIListView, KPIDetailView, KPICreateView, KPIUpdateView, KPIDeleteView, download_pdf,
@@ -11,6 +12,7 @@ urlpatterns = [
 
     path('', HomeView.as_view(), name='home'),
     path('login/', LoginView.as_view(), name='user_login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('strategic-themes/', StrategicThemeListView.as_view(), name='strategic_themes'),
     path('strategic-themes/<int:pk>/', StrategicThemeDetailView.as_view(), name='strategic_theme_detail'),
     path('strategic-themes/create/', StrategicThemeCreateView.as_view(), name='strategic_theme_create'),
@@ -62,6 +64,8 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user_list'),
     path('users/create/', UserCreateView.as_view(), name='user_create'),
     path('users/<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
+    # Score Card
+    path('score-card/', ScoreCardListView.as_view(), name='score_card_list'),
     
     # Planning Views
     path('main-activity/create/<int:kpi_id>/', MainActivityCreateView.as_view(), name='main_activity_create'),

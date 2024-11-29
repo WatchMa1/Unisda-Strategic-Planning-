@@ -44,6 +44,12 @@ class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
 class HomeView(RoleAndDesignationRequiredMixin, View):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        username = self.re
+        context['username'] = username
+        return context
+    
     def get(self, request):
         return render(request, 'home.html')
 
@@ -604,12 +610,35 @@ class ReportListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get activities and reports
-        activities = Activity.objects.all()
+        activities = Activity.objects.filter(
+            status=1
+        )
         reports = Report.objects.filter(designation=self.request.user.designation)
 
         # Create a mapping of activity IDs to their reports
         reports_by_activity = {report.activity_id: report for report in reports}
 
+        # Pass activities, reports, and the form to the context
+        context['activities'] = activities
+        context['reports_by_activity'] = reports_by_activity  # Pre-filtered reports by activity ID
+        context['form'] = ReportForm()
+        return context
+class ScoreCardListView(TemplateView):
+    template_name = 'reports.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get activities and reports
+        user_designation = self.request.user.designation
+        activities = Activity.objects.filter(
+            status=0
+            )
+        reports = Report.objects.filter(
+            designation=self.request.user.designation
+            )
+
+        # Create a mapping of activity IDs to their reports
+        reports_by_activity = {report.activity_id: report for report in reports}
         # Pass activities, reports, and the form to the context
         context['activities'] = activities
         context['reports_by_activity'] = reports_by_activity  # Pre-filtered reports by activity ID
@@ -638,7 +667,7 @@ class SubmitReportView(View):
             defaults={'designation': request.user.designation}
         )
 
-        if report.status == 1:
+        if activity.status == 1:
             messages.error(request, "This report has already been submitted.")
             return redirect('report_list')  
 
@@ -647,8 +676,9 @@ class SubmitReportView(View):
         if form.is_valid():
             form.instance.designation = self.request.user.designation
             form.save()
-            report.status = 1  # Mark report as submitted
-            report.save()
+            activity.status = 1
+            activity.save()
+
             messages.success(request, "Report submitted successfully.")
         else:
             messages.error(request, "There was an error submitting the report.")

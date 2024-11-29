@@ -14,12 +14,12 @@ from pathlib import Path
 from django.urls import reverse_lazy
 
 LOGIN_URL = reverse_lazy("login")  # Redirect to login if unauthenticated
+LOGOUT_REDIRECT_URL = '/'
 
 # Optional: Customize 403 error handler for insufficient permissions
 HANDLER403 = "strategic_planning.views.permission_denied"
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/

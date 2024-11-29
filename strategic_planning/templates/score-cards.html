@@ -14,10 +14,7 @@
                         </div>
                         <div class="section-description-actions">
                             <a href="{% url 'generate_report' %}" class="btn btn-dark">
-                                <i class="material-icons-outlined">print</i> My Reports
-                            </a>
-                            <a href="{% url 'report_department' %}" class="btn btn-dark">
-                                <i class="material-icons-outlined">file_download</i> Generate Report
+                                <i class="material-icons-outlined">print</i> My Work Plan
                             </a>
                             <a href="{% url 'strategic_objective_create' %}" class="btn btn-green">
                                 <i class="material-icons"></i> Print
@@ -83,7 +80,7 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ activity.name }}</td>
                             <td>
-                                {% if report and activity.status == 1 %}
+                                {% if report and report.status == 1 %}
                                 {{ report.report_date }}
                                 {% else %}
                                 <form method="post" action="{% url 'submit_report' activity.id %}">
@@ -92,28 +89,28 @@
                                     {% endif %}
                             </td>
                             <td>
-                                {% if report and activity.status == 1 %}
+                                {% if report and report.status == 1 %}
                                 {{ report.goal_score }}
                                 {% else %}
                                 {{ form.goal_score }}
                                 {% endif %}
                             </td>
                             <td>
-                                {% if report and activity.status == 1 %}
+                                {% if report and report.status == 1 %}
                                 {{ report.actual_spent }}
                                 {% else %}
                                 {{ form.actual_spent }}
                                 {% endif %}
                             </td>
                             <td>
-                                {% if report and activity.status == 1 %}
+                                {% if report and report.status == 1 %}
                                 {{ report.report_details }}
                                 {% else %}
                                 {{ form.report_details }}
                                 {% endif %}
                             </td>
                             <td>
-                                {% if report and activity.status == 1 %}
+                                {% if report and report.status == 1 %}
                                 <span class="badge bg-success">Submitted</span>
                                 {% else %}
                                 <button type="submit" class="btn btn-primary">Submit</button>
