@@ -33,10 +33,14 @@
             body {
                 font-family: 'Times New Roman', Times, serif;
             }
+
             * {
-                -webkit-print-color-adjust: exact; /* For Safari/Chrome */
-                print-color-adjust: exact; /* For Firefox/Edge */
+                -webkit-print-color-adjust: exact;
+                /* For Safari/Chrome */
+                print-color-adjust: exact;
+                /* For Firefox/Edge */
             }
+
             .a4-page {
                 display: block;
                 width: 297mm;
@@ -47,11 +51,14 @@
                 page-break-after: always;
             }
 
-            .table-sm td, .table-sm th {
+            .table-sm td,
+            .table-sm th {
                 padding: 0.1rem;
             }
 
-            th, td, tr {
+            th,
+            td,
+            tr {
                 border: 2px solid #000000;
             }
 
@@ -72,11 +79,14 @@
                 page-break-after: always;
             }
 
-            .table-sm td, .table-sm th {
+            .table-sm td,
+            .table-sm th {
                 padding: 0.1rem;
             }
 
-            th, td, tr {
+            th,
+            td,
+            tr {
                 border: 2px solid #000000;
             }
         }
@@ -85,7 +95,7 @@
 
 <body>
     <div class="text-end mb-2">
-        <button class="btn btn-dark print-button" onclick="window.print()">Print Report</button>
+        <button class="btn btn-dark print-button" onclick="window.print()">Print Plan</button>
     </div>
     <div class="a4-page">
         <div class="text-center mb-4 position-relative">
@@ -93,8 +103,8 @@
                 <img src="/static/assets/images/sda.png" alt="Logo" width="80px">
             </div>
             <h4 class="text-uppercase fw-bold">University Seventh Day Adventist Church</h4>
-            <h4 class="text-uppercase">{{department}} Department</h4>
-            <h6>{{year}} {{quarter}} Report</h6>
+            <h4 class="text-uppercase">{{name}} Department</h4>
+            <h6>{{year}} {{quarter}} Plan</h6>
         </div>
 
         <div class="table-container mt-3">
@@ -103,14 +113,12 @@
                     <tr>
                         <th>Strategic Theme</th>
                         <th>Strategic Objective</th>
-                        <th>Key Performance Indicator</th>
+                        <th>KPI</th>
                         <th>Main Activity</th>
                         <th>Sub-Activity</th>
                         <th>Date</th>
                         <th>Budget</th>
-                        <th>Score</th>
-                      
-                        <th>Report Details</th>
+                        <th>Explanations</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -123,9 +131,7 @@
                         <td>{{ row.activity }}</td>
                         <td>{{ row.date }}</td>
                         <td>{{ row.budget }}</td>
-                        <td style="--dynamic-color: {{ row.status }}; background-color: var(--dynamic-color);">
-                        </td>
-                        <td>{{ row.report_details }}</td>
+                        <td>{{ row.details }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -134,9 +140,8 @@
 
         <div class="row ">
             <ul class="sign list-style-none">
-                <li class="box">Prepared by</li>
-                <li class="box">{{ user.first_name }} {{ user.last_name }}</li>
-                <li class="box">{{ department }} Department</li>
+
+                <li class="box">{{ name }} Department's Work Plan</li>
             </ul>
         </div>
     </div>

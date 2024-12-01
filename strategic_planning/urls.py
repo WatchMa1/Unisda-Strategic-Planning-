@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from .views import (
-    ActivityPlanningCreateView, ActivityPlanningUpdateView, ActivityReportView, AdminChurchReportView, AdminDepartmentalReportView, AdminReportListView, AdminReportsListView, DepartmentalReportView, FullReportView, GenerateChurchReportsView, GenerateReportView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, ScoreCardListView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
+    ActivityPlanningCreateView, ActivityPlanningUpdateView, ActivityReportView, AdminChurchPlanView, AdminChurchReportView, AdminDepartmentalPlanView, AdminDepartmentalReportView, AdminPlansListView, AdminReportListView, AdminReportsListView, DepartmentPlanView, DepartmentalReportView, FullReportView, GenerateChurchPlansView, GenerateChurchReportsView, GeneratePlanningReportView, GenerateReportView, HomeView, KPIPlanningListView, LoginView, MainActivityCreateView, MainActivityUpdateView, MyActivitiesListView, ReportCreateView, ReportDetailView, ReportListView, ReportUpdateView, RoleCreateView, RoleDetailView, RoleListView, RoleUpdateView, ScoreCardListView, StrategicObjectivePlanningListView,StrategicThemeListView, StrategicThemeDetailView, StrategicThemeCreateView, StrategicThemePlanningListView, StrategicThemeUpdateView, StrategicThemeDeleteView,
     StrategicObjectiveListView, StrategicObjectiveDetailView, StrategicObjectiveCreateView, StrategicObjectiveUpdateView, StrategicObjectiveDeleteView,
     DesignationListView, DesignationDetailView, DesignationCreateView, DesignationUpdateView, DesignationDeleteView,
     KPIListView, KPIDetailView, KPICreateView, KPIUpdateView, KPIDeleteView, download_pdf,
@@ -64,9 +64,11 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user_list'),
     path('users/create/', UserCreateView.as_view(), name='user_create'),
     path('users/<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
+    
     # Score Card
     path('score-card/', ScoreCardListView.as_view(), name='score_card_list'),
-    
+    path('my-activities/', MyActivitiesListView.as_view(), name='my_activities_list'),
+        
     # Planning Views
     path('main-activity/create/<int:kpi_id>/', MainActivityCreateView.as_view(), name='main_activity_create'),
     path('main-activity/update/', MainActivityUpdateView.as_view(), name='main_activity_update'),
@@ -82,12 +84,18 @@ urlpatterns = [
     
     # Reporting 
     path('generate-report/', GenerateReportView.as_view(), name='generate_report'),
+    path('generate-planning-report/', GeneratePlanningReportView.as_view(), name='generate_activities_report'),
     path('generate-church-report/', GenerateChurchReportsView.as_view(), name='generate_church_report'),
-    path("departmental-report/", DepartmentalReportView.as_view(), name="report_department"),
+    path('generate-church-plan/', GenerateChurchPlansView.as_view(), name='generate_church_plan'),
+    path("department-report/", DepartmentalReportView.as_view(), name="report_department"),
+    path("department-plan/", DepartmentPlanView.as_view(), name="department_plan"),
     path("admin-departmental-report/", AdminDepartmentalReportView.as_view(), name="admin_department_report"),
+    path("admin-departmental-plan/", AdminDepartmentalPlanView.as_view(), name="admin_department_plan"),
     path("admin-church-report/", AdminChurchReportView.as_view(), name="admin_church_report"),
     path("full-report/", FullReportView.as_view(), name="report_full"),
+    path("church-plan/", AdminChurchPlanView.as_view(), name="admin_church_plan"),
     path('admin-report/', AdminReportsListView.as_view(), name='admin_reports'),
+    path('admin-plan/', AdminPlansListView.as_view(), name='admin_plans'),
     
     path('download-pdf/', download_pdf, name='download_pdf'),
 ]

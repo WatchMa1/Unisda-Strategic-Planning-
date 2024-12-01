@@ -85,7 +85,7 @@
 
 <body>
     <div class="text-end mb-2">
-        <button class="btn btn-dark print-button" onclick="window.print()">Print Report</button>
+        <button class="btn btn-dark print-button" onclick="window.print()">Print Plan</button>
     </div>
     <div class="a4-page">
         <div class="text-center mb-4 position-relative">
@@ -94,7 +94,7 @@
             </div>
             <h4 class="text-uppercase fw-bold">University Seventh Day Adventist Church</h4>
             <h4 class="text-uppercase">{{department}} Department</h4>
-            <h6>{{year}} {{quarter}} Report</h6>
+            <h6>{{year}} {{quarter}} Plan</h6>
         </div>
 
         <div class="table-container mt-3">
@@ -103,14 +103,12 @@
                     <tr>
                         <th>Strategic Theme</th>
                         <th>Strategic Objective</th>
-                        <th>Key Performance Indicator</th>
+                        <th>KPI</th>
                         <th>Main Activity</th>
                         <th>Sub-Activity</th>
                         <th>Date</th>
                         <th>Budget</th>
-                        <th>Score</th>
-                      
-                        <th>Report Details</th>
+                        <th>Explanations</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -123,9 +121,7 @@
                         <td>{{ row.activity }}</td>
                         <td>{{ row.date }}</td>
                         <td>{{ row.budget }}</td>
-                        <td style="--dynamic-color: {{ row.status }}; background-color: var(--dynamic-color);">
-                        </td>
-                        <td>{{ row.report_details }}</td>
+                        <td>{{ row.details }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

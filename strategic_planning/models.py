@@ -113,6 +113,7 @@ class Activity(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField()
     kpi = models.ForeignKey('KPI', on_delete=models.CASCADE, related_name="activities")
+    designation = models.ForeignKey(Designation, on_delete=models.CASCADE, null=True, related_name='Activities')
     status = models.IntegerField(default=0)
     main_activity = models.ForeignKey(MainActivity, on_delete=models.CASCADE, null=True, 
         blank=True, 
@@ -133,6 +134,6 @@ class Report(models.Model):
     report_details = models.TextField()
     actual_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     def __str__(self):
-        return f"Report by {self.user.name} for {self.quarter}"
+        return f"Report by {self.user.first_name}"
 
 

@@ -59,13 +59,16 @@
         padding: 10px 15px;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
-    .text-black{
+
+    .text-black {
         color: black;
-        margin-bottom:0px;
+        margin-bottom: 0px;
     }
-    .text-warnning{
+
+    .text-warnning {
         margin-bottom: 0px !important;
     }
+
     .accordionre-menu .list-group-item:hover {
         background: #17a3b865;
         border-bottom: solid 3px #135761ea;
@@ -103,15 +106,23 @@
                 <ul class="accordionre-menu list-group list-group-flush">
                     <header class="d-flex border-bottom border-5  sidebar-title fw-bold text-uppercase text-secondary">
                         <img src="{% static 'assets/images/sda.png' %}" width="70px" alt="">
-                        <h3 class="text-green fw-bold">Strategic Planning</h3> 
+                        <h3 class="text-green fw-bold">Strategic Planning</h3>
                     </header>
+                    <li
+                        class="list-group-item border-bottom  {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <a href="{% url 'home' %}"
+                            class="align-items-center d-flex text-decoration-none text-dark">
+                            <i class="bi bi-circle-fill text-primary me-3"></i>
+                            <h5 class="text-warnning ">Dashboard</h5>
+                        </a>
+                    </li>
                     {% if request.user.role and request.user.role.name != 'Admin' %}
                     <li
                         class="list-group-item border-bottom  {% if request.resolver_match.url_name == 'report_list' %}active{% endif %}">
                         <a href="{% url 'report_list' %}"
                             class="align-items-center d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
-                            <h5 class="text-warnning ">Reports</h5> 
+                            <h5 class="text-warnning ">Reports</h5>
                         </a>
                     </li>
                     <li
@@ -119,17 +130,14 @@
                         <a href="{% url 'score_card_list' %}"
                             class="align-items-center d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
-                            <h5 class="text-warnning ">Score Card</h5> 
+                            <h5 class="text-warnning ">Score Card</h5>
                         </a>
                     </li>
 
                     <li class="list-group-item border-bottom">
-                        <a href="#" 
-                           class="d-flex align-items-center text-decoration-none dropdown-toggle" 
-                           data-bs-toggle="collapse" 
-                           data-bs-target="#planningDropdown" 
-                           aria-expanded="false" 
-                           aria-controls="planningDropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
+                            data-bs-toggle="collapse" data-bs-target="#planningDropdown" aria-expanded="false"
+                            aria-controls="planningDropdown">
                             <i class="bi bi-folder-fill text-primary me-3"></i>
                             <h5 class="text-warnning dropdown-item-title">Planning</h5>
                         </a>
@@ -137,8 +145,8 @@
                             {% for theme in strategic_themes %}
                             <li
                                 class="list-group-item border-bottom {% if request.resolver_match.url_name == 'objective_planning_list' and theme.id == current_theme_id %}active{% endif %}">
-                                <a href="{% url 'objective_planning_list' theme.id %}" 
-                                   class="d-flex align-items-center text-decoration-none">
+                                <a href="{% url 'objective_planning_list' theme.id %}"
+                                    class="d-flex align-items-center text-decoration-none">
                                     <i class="bi bi-circle-fill text-primary me-3"></i>
                                     <h6 class="text-black dropdown-item-title">{{ theme.theme_name }}</h6>
                                 </a>
@@ -146,18 +154,26 @@
                             {% endfor %}
                         </ul>
                     </li>
-                    
+
                     {%endif%}
 
                     {% if request.user.role and request.user.role.name == 'Admin' %}
                     <li class="header pt-3 pb-3">
-                            <h4 class="text-green ms-3 ">ADMIN </h4>
+                        <h4 class="text-green ms-3 ">ADMIN </h4>
                     </li>
 
-                    <li class="border-bottom list-group-item {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}">
+                    <li
+                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}">
                         <a href="{% url 'admin_reports' %}" class="d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
                             <h5 class="text-black">Reports</h5>
+                        </a>
+                    </li>
+                    <li
+                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}">
+                        <a href="{% url 'activity_list' %}" class="d-flex text-decoration-none text-dark">
+                            <i class="bi bi-circle-fill text-primary me-3"></i>
+                            <h5 class="text-black">Activities</h5>
                         </a>
                     </li>
                     <li
@@ -165,7 +181,7 @@
                         <a href="{% url 'strategic_themes' %}" class="d-flex text-decoration-none text-green">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
                             <h5 class="text-black">Strategic Themes</h5>
-                            
+
                         </a>
                     </li>
                     <li
@@ -173,20 +189,21 @@
                         <a href="{% url 'strategic_objectives' %}" class="d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
                             <h5 class="text-black">Strategic Objectives </h5>
-                            
+
                         </a>
                     </li>
-                    <li class="border-bottom list-group-item {% if request.resolver_match.url_name == 'kpi_list' %}active{% endif %}">
+                    <li
+                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'kpi_list' %}active{% endif %}">
                         <a href="{% url 'kpi_list' %}" class="d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
-                            <h5 class="text-black">KPI's</h5> 
+                            <h5 class="text-black">KPI's</h5>
                         </a>
                     </li>
                     <li
                         class="border-bottom list-group-item {% if request.resolver_match.url_name == 'designation_list' %}active{% endif %}">
                         <a href="{% url 'designation_list' %}" class="d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
-                            <h5 class="text-black">Departments</h5>                            
+                            <h5 class="text-black">Departments</h5>
                         </a>
                     </li>
                     <li
@@ -194,10 +211,11 @@
                         <a href="{% url 'role_list' %}" class="d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
                             <h5 class="text-black">Roles </h5>
-                            
+
                         </a>
                     </li>
-                    <li class="border-bottom list-group-item {% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">
+                    <li
+                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">
                         <a href="{% url 'user_list' %}" class="d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
                             <h5 class="text-black">Users </h5>
@@ -250,34 +268,40 @@
                                 <li class="nav-item">
                                     <a class="nav-link toggle-search" href="#"><i class="material-icons">search</i></a>
                                 </li>
-                                  <li class="nav-item dropdown">
-                                    <a href="javascrpt:;" class="dropdown-toggle dropdown-toggle-nocaret" data-bs-toggle="dropdown">
-                                       <img src="{% static 'assets/images/man.jpg' %}" class="rounded-circle p-1 border" width="45" height="45">
+                                <li class="nav-item dropdown">
+                                    <a href="javascrpt:;" class="dropdown-toggle dropdown-toggle-nocaret"
+                                        data-bs-toggle="dropdown">
+                                        <img src="{% static 'assets/images/man.jpg' %}"
+                                            class="rounded-circle p-1 border" width="45" height="45">
                                     </a>
                                     <div class="dropdown-menu dropdown-user dropdown-menu-end shadow">
-                                      <a class="dropdown-item  gap-2 py-2" href="javascript:;">
-                                        <div class="text-center">
-                                          <img src="{% static 'assets/images/man.jpg' %}" class="rounded-circle p-1 shadow mb-3" width="90" height="90"
-                                            alt="">
-                                          <h5 class="user-name mb-0 fw-bold">{{username}}</h5>
-                                        </div>
-                                      </a>
-                                      <hr class="dropdown-divider">
-                                      <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-green" href="javascript:;"><i
-                                        class="material-icons-outlined">person_outline</i>Profile</a>
-                                      <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-green" href="javascript:;"><i
-                                        class="material-icons-outlined">local_bar</i>Setting</a>
-                                
-                                      <hr class="dropdown-divider">
-                                      <form action="{% url 'logout' %}" method="POST" style="display: inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item d-flex align-items-center text-danger gap-2 py-2">
-                                            <i class="material-icons-outlined">power_settings_new</i>Logout
-                                        </button>
-                                    </form>
-                                   
+                                        <a class="dropdown-item  gap-2 py-2" href="javascript:;">
+                                            <div class="text-center">
+                                                <img src="{% static 'assets/images/man.jpg' %}"
+                                                    class="rounded-circle p-1 shadow mb-3" width="90" height="90"
+                                                    alt="">
+                                                <h5 class="user-name mb-0 fw-bold">{{username}}</h5>
+                                            </div>
+                                        </a>
+                                        <hr class="dropdown-divider">
+                                        <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-green"
+                                            href="javascript:;"><i
+                                                class="material-icons-outlined">person_outline</i>Profile</a>
+                                        <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-green"
+                                            href="javascript:;"><i
+                                                class="material-icons-outlined">local_bar</i>Setting</a>
+
+                                        <hr class="dropdown-divider">
+                                        <form action="{% url 'logout' %}" method="POST" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                class="dropdown-item d-flex align-items-center text-danger gap-2 py-2">
+                                                <i class="material-icons-outlined">power_settings_new</i>Logout
+                                            </button>
+                                        </form>
+
                                     </div>
-                                  </li>
+                                </li>
                             </ul>
                         </div>
                     </div>

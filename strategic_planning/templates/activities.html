@@ -14,8 +14,8 @@
                         <a href="#" class="btn btn-dark">
                             <i class="material-icons-outlined">file_download</i>Download
                         </a>
-                        <a href="{% url 'activity_create' %}" class="btn btn-green">
-                            <i class="material-icons">add</i>Create Activity
+                        <a href="{% url 'admin_plans' %}" class="btn btn-green">
+                            <i class="material-icons">add</i>Activity Plans
                         </a>
                     </div>
                 </div>
@@ -53,13 +53,9 @@
 
                         <!-- Table Header for Actual Amount -->
                         <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Actual Amount</h5>
+                            <h5 class="text text-green">Start Date</h5>
                         </th>
 
-                        <!-- Table Header for KPI -->
-                        <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Associated KPI</h5>
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,8 +86,8 @@
                         </td>
 
                         <!-- Associated KPI -->
-                        <td class="field-kpi">
-                            {{ activity.kpi.name }}
+                        <td class="field-start date">
+                            {{ activity.start_date }}
                         </td>
                     </tr>
                     {% empty %}
