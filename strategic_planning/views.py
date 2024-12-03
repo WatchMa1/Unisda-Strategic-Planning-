@@ -43,7 +43,7 @@ class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
 
         return super().dispatch(request, *args, **kwargs)
 
-from django.db.models import Case, When, Value, IntegerField, F, Sum
+from django.db.models import Case, When, Value, IntegerField, F, Sum, Count
 
 class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
     template_name = 'home.html'
@@ -78,13 +78,15 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
             start_date__year=current_year,
             start_date__quarter=current_quarter
         ).count()
-
+        if num_activities_quarter == 0 :
+            num_activities_quarter = 0.0001
         num_activities_budget = activities.count()
 
         # Fetch reported activities and actual spent for the current designation
         reports = Report.objects.filter(designation=current_designation)
 
         reported_activities_quarter = reports.filter(
+            designation=current_designation,
             report_date__year=current_year,
             report_date__quarter=current_quarter
         )
@@ -94,7 +96,7 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
         failed_activities_quarter =reported_activities_quarter.filter(
             goal_score = 'red'
         ).count()
-        reports_quarter_percentage = (completed_activities_quarter / num_activities_quarter) * 100
+        reports_quarter_percentage = ((completed_activities_quarter) / (num_activities_quarter)) * 100
         failed_quarter_percentage = (failed_activities_quarter / num_activities_quarter) * 100
         actual_spent_quarter = reported_activities_quarter.aggregate(
             total=Sum('actual_spent')
@@ -177,7 +179,19 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
             start_date__quarter=current_quarter,
             status=0
         ).order_by('start_date')[:5]
-       
+        
+        # Count activities by goal_score
+        goal_score_counts = reported_activities_quarter.values('goal_score').annotate(count=Count('goal_score'))
+        goal_score_data = {item['goal_score']: item['count'] for item in goal_score_counts}
+
+        # Ensure all statuses are represented in the data
+        chart_data = {
+            'green': goal_score_data.get('green', 0),
+            'orange': goal_score_data.get('orange', 0),
+            'yellow': goal_score_data.get('yellow', 0),
+            'red': goal_score_data.get('red', 0),
+        }
+        print(chart_data)
         # Populate context
         context.update({
             'username': user.first_name,
@@ -199,6 +213,7 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
             'failed_activities_quarter' : failed_activities_quarter,
             'failed_quarter_percentage' : failed_quarter_percentage,
             'reports_quarter_percentage' : reports_quarter_percentage, 
+            'chart_data': chart_data,
         })
 
         return context

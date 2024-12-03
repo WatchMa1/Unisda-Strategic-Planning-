@@ -1,6 +1,15 @@
 {% extends 'general/base.html' %}
 
 {% block content %}
+<style>
+    .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+</style>
+
 <div class="app-content">
     <div class="content-wrapper">
         <div class="container">
@@ -214,64 +223,12 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-xl-12">
-                    <div class="card widget widget-stats-large">
-                        <div class="row">
-                            <div class="col-xl-8">
-                                <div class="widget-stats-large-chart-container">
-                                    <div class="card-header">
-                                        <h5 class="card-title">Earnings<span
-                                                class="badge badge-light badge-style-light">Last Year</span></h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="apex-earnings"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-4">
-                                <div class="widget-stats-large-info-container">
-                                    <div class="card-header">
-                                        <h5 class="card-title">Report<span
-                                                class="badge badge-info badge-style-light">Updated 5 min ago</span></h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <p class="card-description">Duis fringilla eget velit sit amet lobortis. Donec
-                                            rutrum, arcu auctor varius cursus. mi nulla dapibus justo, at volutpat
-                                            libero</p>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">Neptune - v1.0<span
-                                                    class="float-end text-success">14%<i
-                                                        class="material-icons align-middle">keyboard_arrow_up</i></span>
-                                            </li>
-                                            <li class="list-group-item">Space - v1.2<span
-                                                    class="float-end text-danger">7%<i
-                                                        class="material-icons align-middle">keyboard_arrow_down</i></span>
-                                            </li>
-                                            <li class="list-group-item">Lime - v1.0.3<span
-                                                    class="float-end text-success">21%<i
-                                                        class="material-icons align-middle">keyboard_arrow_up</i></span>
-                                            </li>
-                                            <li class="list-group-item">Circl - v2.3<span
-                                                    class="float-end text-success">17%<i
-                                                        class="material-icons align-middle">keyboard_arrow_up</i></span>
-                                            </li>
-                                            <li class="list-group-item">Connect - v1.7<span
-                                                    class="float-end text-danger">3%<i
-                                                        class="material-icons align-middle">keyboard_arrow_down</i></span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
 
         </div>
     </div>
 </div>
+
+
 
 {% endblock %}
