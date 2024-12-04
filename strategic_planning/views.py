@@ -19,7 +19,6 @@ from django.core.exceptions import PermissionDenied
 from collections import defaultdict
 
 from django.http import FileResponse
-from strategic_planning.utils.pdf_generator import generate_pdf
 # Create your views here.
 
 class RoleAndDesignationRequiredMixin(LoginRequiredMixin):
@@ -47,12 +46,12 @@ from django.db.models import Case, When, Value, IntegerField, F, Sum, Count
 
 class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
     template_name = 'home.html'
-
+    
     def get_context_data(self, **kwargs):
         # Fetch logged-in user and designation
         user = self.request.user
         current_designation = getattr(user, 'designation', None)
-
+        role = user.role.name
         # Initialize context
         context = super().get_context_data(**kwargs)
 
@@ -62,8 +61,10 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
         current_quarter = (today.month - 1) // 3 + 1
 
         # Fetch activities for the current designation
-        activities = Activity.objects.filter(designation=current_designation)
-
+        if role == "Admin":
+            activities = Activity.objects.all()
+        else:
+            activities = Activity.objects.filter(designation=current_designation)
         # Calculate total planned budget and number of activities
         planned_budget_quarter = activities.filter(
             start_date__year=current_year,
@@ -78,15 +79,15 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
             start_date__year=current_year,
             start_date__quarter=current_quarter
         ).count()
-        if num_activities_quarter == 0 :
-            num_activities_quarter = 0.0001
         num_activities_budget = activities.count()
 
         # Fetch reported activities and actual spent for the current designation
-        reports = Report.objects.filter(designation=current_designation)
+        if role == "Admin":
+            reports = Report.objects.all()
+        else:    
+            reports = Report.objects.filter(designation=current_designation)
 
         reported_activities_quarter = reports.filter(
-            designation=current_designation,
             report_date__year=current_year,
             report_date__quarter=current_quarter
         )
@@ -96,8 +97,8 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
         failed_activities_quarter =reported_activities_quarter.filter(
             goal_score = 'red'
         ).count()
-        reports_quarter_percentage = ((completed_activities_quarter) / (num_activities_quarter)) * 100
-        failed_quarter_percentage = (failed_activities_quarter / num_activities_quarter) * 100
+        reports_quarter_percentage = int(((completed_activities_quarter) / (num_activities_quarter)) * 100 ) if num_activities_quarter > 0 else 0
+        failed_quarter_percentage =int((failed_activities_quarter / num_activities_quarter) * 100 ) if num_activities_quarter > 0 else 0
         actual_spent_quarter = reported_activities_quarter.aggregate(
             total=Sum('actual_spent')
         )['total'] or 0
@@ -173,13 +174,20 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
         overall_progress = (total_reported_activities / total_created_activities * 100) if total_created_activities > 0 else 0
         
         # Fetch activities for the current quarter with status 0
-        sub_activities = Activity.objects.filter(
-            designation=current_designation,
-            start_date__year=current_year,
-            start_date__quarter=current_quarter,
-            status=0
-        ).order_by('start_date')[:5]
-        
+        if role == "Admin":
+            sub_activities = Activity.objects.filter(
+                start_date__year=current_year,
+                start_date__quarter=current_quarter,
+                status=0
+            ).order_by('start_date')[:5]
+        else:
+            sub_activities = Activity.objects.filter(
+                designation=current_designation,
+                start_date__year=current_year,
+                start_date__quarter=current_quarter,
+                status=0
+            ).order_by('start_date')[:5]
+            
         # Count activities by goal_score
         goal_score_counts = reported_activities_quarter.values('goal_score').annotate(count=Count('goal_score'))
         goal_score_data = {item['goal_score']: item['count'] for item in goal_score_counts}

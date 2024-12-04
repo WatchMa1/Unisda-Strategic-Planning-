@@ -41,19 +41,21 @@
                             <div class="card-body">
                                 <h3 class="card-title text-green fw-bold">DEPARTMENTAL STRATEGIC PLANNING</h3>
                                 {% if page_name == 'main_activity_create' %}
-                                <h5 class="card-title text-green fw-bold pt-3">Key Performance Indicator: {{kpi.name}}</h5>
+                                <h5 class="card-title text-green fw-bold pt-3">Key Performance Indicator: {{kpi.name}}
+                                </h5>
                                 <div class="pb-4">
                                     <a href="" class="kpi-link">Note: If your activity is not a main activity skip this
                                         part</a>
                                 </div>
                                 {% elif page_name == 'sub_activity_create' %}
-                                <h5 class="card-title text-green fw-bold pt-3">Key Performance Indicator: {{kpi.name}}</h5>
+                                <h5 class="card-title text-green fw-bold pt-3">Key Performance Indicator: {{kpi.name}}
+                                </h5>
                                 <div class="pb-4">
                                     <a href="" class="kpi-link">Note: If your activity will take part in one date only
                                         indicate end date</a>
                                 </div>
                                 {% endif %}
-                    
+
 
                                 {% if page_name == 'objective_planning_list' %}
                                 <div class="container">
@@ -63,7 +65,8 @@
                                             <ul class="nav nav-tabs d-flex" id="objectiveTabs" role="tablist">
                                                 {% for objective in strategic_objectives %}
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link w-100 {% if forloop.first %}active{% endif %}"
+                                                    <button
+                                                        class="nav-link w-100 {% if forloop.first %}active{% endif %}"
                                                         id="objective-{{ objective.id }}-tab" data-bs-toggle="tab"
                                                         data-bs-target="#objective-{{ objective.id }}" type="button"
                                                         role="tab" aria-controls="objective-{{ objective.id }}"
@@ -83,12 +86,14 @@
                                                 <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
                                                     id="objective-{{ objective.id }}" role="tabpanel"
                                                     aria-labelledby="objective-{{ objective.id }}-tab">
-                                                    <h5 class="text-green fw-bold">KPIs for {{ objective.objective_name }}</h5>
+                                                    <h5 class="text-green fw-bold">KPIs for {{ objective.objective_name
+                                                        }}</h5>
                                                     <ul class="list-group">
                                                         {% for kpi in objective.kpis.all %}
                                                         <li class="list-group-item">
                                                             <a href="{% url 'main_activity_create' kpi.id %}"
-                                                                class="kpi-link" data-kpi-id="{{ kpi.id }}">{{ kpi.name}}</a>
+                                                                class="kpi-link" data-kpi-id="{{ kpi.id }}">{{
+                                                                kpi.name}}</a>
                                                         </li>
                                                         {% empty %}
                                                         <li class="list-group-item">No KPIs found for this objective.
@@ -145,13 +150,6 @@
                                         <div class="col-12 d-flex justify-content-between">
                                             <div class="d-flex mt-5">
                                                 <a href="javascript:history.back()" class="btn btn-light">back</a>
-                                                {% if main_activity %}
-                                                <a href="{% url 'sub_activity_create' kpi.id main_activity.id %}"
-                                                    class="ms-3 btn btn-danger">Skip</a>
-                                                {% else %}
-                                                <a href="{% url 'sub_activity_create_without_main' kpi.id %}"
-                                                    class="ms-3 btn btn-danger">Skip</a>
-                                                {% endif %}
                                             </div>
                                             <div class="mt-5">
                                                 <button type="submit" class="btn btn-success">Next</button>
@@ -162,7 +160,7 @@
                                 </form>
 
                                 {% elif page_name == 'sub_activity_create' or page_name == 'sub_activity_update' %}
-                                <form method="POST">
+                                <form method="POST" action="{% url 'score_card_list' %}">
                                     {% csrf_token %}
                                     <div class="row">
                                         <div class="col-12">
