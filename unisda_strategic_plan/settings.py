@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from django.urls import reverse_lazy
+from dotenv import load_dotenv
 
 LOGIN_URL = reverse_lazy("login")  # Redirect to login if unauthenticated
 LOGOUT_REDIRECT_URL = '/'
@@ -20,23 +22,21 @@ LOGOUT_REDIRECT_URL = '/'
 HANDLER403 = "strategic_planning.views.permission_denied"
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR/".eVar", ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+SECRETE_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(w_qmw%fk83el74=_5r#t*s%l7jl$$#@-xtk#14u%u%yg%9ckv'
+DEBUG = os.environ.get('DEBUG')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS += os.environ.get("ALLOWED_HOSTS", "").split()
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -95,44 +95,6 @@ DATABASES = {
         'HOST': 'localhost', 
         'PORT': '3306',      
     }
-}
-
-JAZZMIN_SETTINGS = {
-    "site_title": "Unisda Strategic Plan Admin",
-    "site_header": "Unisda Admin",
-    "site_brand": "Unisda",
-    "site_logo": "img/logo.png",  # Replace with your static logo path
-    "login_logo": None,
-    "welcome_sign": "Welcome to the Unisda Strategic Plan Admin Dashboard",
-    "copyright": "Unisda",
-    "search_model": "auth.User",  # Enable search for specific models
-    "user_avatar": None,  # User avatar field in your user model
-
-    # Custom top menu links
-    "topmenu_links": [
-        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"app": "strategic_planning"},  # Link to your app
-    ],
-
-    # Custom side menu
-    "usermenu_links": [
-        {"name": "Support", "url": "https://support.example.com", "new_window": True},
-        {"model": "auth.user"},
-    ],
-
-    # Additional options
-    "show_sidebar": True,
-    "navigation_expanded": True,
-    "hide_apps": [],
-    "hide_models": [],
-    "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users",
-    },
-    "default_icon_parents": "fas fa-chevron-circle-right",
-    "default_icon_children": "fas fa-circle",
-    "related_modal_active": True,
 }
 
 # Password validation
