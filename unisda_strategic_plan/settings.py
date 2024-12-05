@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+import dj_database_url
 from pathlib import Path
 from django.urls import reverse_lazy
 from dotenv import load_dotenv
@@ -37,6 +38,7 @@ ALLOWED_HOSTS += os.environ.get("ALLOWED_HOSTS", "").split()
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -87,14 +89,9 @@ LOGIN_URL = 'user_login'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'planning_db',
-        'USER': 'root',
-        'PASSWORD': 'kapz.kapz123',
-        'HOST': 'localhost', 
-        'PORT': '3306',      
-    }
+    'default': dj_database_url.config(
+        default="sqlite:///"+ os.path.join(BASE_DIR, "db.sqlite3")
+    )
 }
 
 # Password validation
