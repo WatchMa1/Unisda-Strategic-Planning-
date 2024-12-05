@@ -126,13 +126,16 @@ LOGIN_URL = 'user_login'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default="sqlite:///"+ os.path.join(BASE_DIR, "db.sqlite3")
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'WatchMa1$Stastrategic_planning_db',  
+        'USER': 'WatchMa1',                    
+        'PASSWORD': 'Kapz.kapz123',  
+        'HOST': 'WatchMa1.mysql.pythonanywhere-services.com',  
+        'PORT': '3306',                    
+    }
 }
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
