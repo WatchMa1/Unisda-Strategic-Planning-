@@ -88,10 +88,20 @@ LOGIN_URL = 'user_login'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default="sqlite:///"+ os.path.join(BASE_DIR, "db.sqlite3")
+#     )
+# }
 DATABASES = {
-    'default': dj_database_url.config(
-        default="sqlite:///"+ os.path.join(BASE_DIR, "db.sqlite3")
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'planning_db',       # Your MySQL database name
+        'USER': 'root',              # Your MySQL username
+        'PASSWORD': 'kapz.kapz123',  # Your MySQL password
+        'HOST': 'localhost',         # Database host, e.g., '127.0.0.1' or 'localhost'
+        'PORT': '3306',              # MySQL default port
+    }
 }
 
 # Password validation
