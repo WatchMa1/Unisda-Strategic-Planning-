@@ -27,16 +27,16 @@ load_dotenv(os.path.join(BASE_DIR/".eVar", ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-SECRETE_KEY = os.environ.get('SECRET_KEY')
+# SECRETE_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = os.environ.get('DEBUG')
+# DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-ALLOWED_HOSTS += os.environ.get("ALLOWED_HOSTS", "").split()
+# ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+# ALLOWED_HOSTS += os.environ.get("ALLOWED_HOSTS", "").split()
 
-# SECRET_KEY='django-insecure-(asfcb0lz0#^w=19m45r(_7a@x-v^9oturg&g0zzu#piii-o08'
-# DEBUG = "True"
-# ALLOWED_HOSTS=['*']
+SECRET_KEY='django-insecure-(asfcb0lz0#^w=19m45r(_7a@x-v^9oturg&g0zzu#piii-o08'
+DEBUG = "True"
+ALLOWED_HOSTS=['*']
 # Application definition
 
 INSTALLED_APPS = [
