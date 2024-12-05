@@ -83,6 +83,43 @@ TEMPLATES = [
     },
 ]
 
+JAZZMIN_SETTINGS = {
+    "site_title": "My Dashboard",
+    "site_header": "Planning Dashboard",
+    "site_brand": "Planning",
+    "site_logo": "img/logo.png",  # Replace with your logo path in the static files
+    "welcome_sign": "Welcome to the Planning Admin",
+    "copyright": "Planning Inc.",
+    "search_model": "auth.User",
+    "topmenu_links": [
+        # Custom links to external or internal views
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Support", "url": "https://example.com/support", "new_window": True},
+    ],
+    "usermenu_links": [
+        {"name": "Profile", "url": "/profile", "new_window": False},
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "order_with_respect_to": ["auth", "your_app_name"],
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.User": "fas fa-user",
+        "auth.Group": "fas fa-users",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": True,
+    "custom_css": "css/custom.css",  # Optional custom styles
+    "custom_js": "js/custom.js",    # Optional custom scripts
+    "changeform_format": "horizontal_tabs",  # Format for model edit views
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+    "show_ui_builder": True,  # Show UI Builder in the Admin panel
+}
+
 WSGI_APPLICATION = 'unisda_strategic_plan.wsgi.application'
 LOGIN_REDIRECT_URL = '/'  
 LOGIN_URL = 'user_login'
