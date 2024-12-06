@@ -174,7 +174,7 @@ class UserForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter email address'}),
             'physical_address': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter address', 'rows': 3}),
             'role': forms.Select(attrs={'class': 'form-control'}),
-            'designation': forms.Select(attrs={'class': 'form-control'}),
+            'designation': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         

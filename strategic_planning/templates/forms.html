@@ -92,17 +92,17 @@
         </ul>
 
         {% elif page_name == 'designation_create' %}
-        <h1>create designation</h1>
+        <h1>Departments</h1>
         <ul class="breadcrumb">
             <li><a href="{% url 'designation_list' %}">Activities</a></li>
             <li>create designation</li>
         </ul>
 
         {% elif page_name == 'designation_update' %}
-        <h1>Update designation</h1>
+        <h1>Update Department</h1>
         <ul class="breadcrumb">
             <li><a href="{% url 'designation_list' %}">Activities</a></li>
-            <li>Update designation</li>
+            <li>Update department</li>
         </ul>
 
         {% elif page_name == 'role_create' %}
@@ -532,7 +532,7 @@
                                             <div class="form-group mt-3">
                                                 <div class="d-flex">
                                                     <label for="{{ form.designation.id_for_label }}"
-                                                        class="form-label box">Designation:</label>
+                                                        class="form-label box">Departments:</label>
                                                     {{ form.designation }}
                                                 </div>
                                                 {% if form.designation.errors %}

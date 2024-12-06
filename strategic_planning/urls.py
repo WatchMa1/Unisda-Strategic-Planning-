@@ -56,7 +56,7 @@ urlpatterns = [
     path('designations/update/<int:pk>/', DesignationUpdateView.as_view(), name='designation_update'),
 
     # Report URLs
-    path('reports/', ReportListView.as_view(), name='report_list'),
+    # path('reports/', ReportListView.as_view(), name='report_list'),
     path('reports/<int:pk>/', ReportDetailView.as_view(), name='report_detail'),
     path('reports/create/', ReportCreateView.as_view(), name='report_create'),
     path('reports/update/<int:pk>/', ReportUpdateView.as_view(), name='report_update'),

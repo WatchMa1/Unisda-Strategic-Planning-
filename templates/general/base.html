@@ -7,9 +7,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Responsive Admin Dashboard Template">
-    <meta name="keywords" content="admin,dashboard">
-    <meta name="author" content="stacks">
+    <meta name="description" content="Strategic Planning system">
+    <meta name="keywords" content="Strategic Planning">
+    <meta name="author" content="Simbarashe Kapundu">
     <!-- The above 6 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title -->
@@ -116,23 +116,20 @@
                             <h5 class="text-warnning ">Dashboard</h5>
                         </a>
                     </li>
-                    {% if request.user.role and request.user.role.name != 'Admin' %}
-                    <li
-                        class="list-group-item border-bottom  {% if request.resolver_match.url_name == 'report_list' %}active{% endif %}">
-                        <a href="{% url 'report_list' %}"
-                            class="align-items-center d-flex text-decoration-none text-dark">
+                    {% if request.user.role and request.user.role.name != 'Admin' and request.user.role.name != 'Elder' %}
+                    <li class="list-group-item border-bottom {% if request.resolver_match.url_name == 'report_list' %}active{% endif %}">
+                        <a href="{% url 'report_list' %}" class="align-items-center d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
-                            <h5 class="text-warnning ">Reports</h5>
+                            <h5 class="text-warning">Reports</h5>
                         </a>
                     </li>
-                    <li
-                        class="list-group-item border-bottom  {% if request.resolver_match.url_name == 'score_card_list' %}active{% endif %}">
-                        <a href="{% url 'score_card_list' %}"
-                            class="align-items-center d-flex text-decoration-none text-dark">
+                    <li class="list-group-item border-bottom {% if request.resolver_match.url_name == 'score_card_list' %}active{% endif %}">
+                        <a href="{% url 'score_card_list' %}" class="align-items-center d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
-                            <h5 class="text-warnning ">Score Card</h5>
+                            <h5 class="text-warning">Score Card</h5>
                         </a>
                     </li>
+                    
 
                     <li class="list-group-item border-bottom">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
@@ -170,7 +167,7 @@
                         </a>
                     </li>
                     <li
-                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}">
+                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'activity_list' %}active{% endif %}">
                         <a href="{% url 'activity_list' %}" class="d-flex text-decoration-none text-dark">
                             <i class="bi bi-circle-fill text-primary me-3"></i>
                             <h5 class="text-black">Activities</h5>
@@ -221,6 +218,25 @@
                             <h5 class="text-black">Users </h5>
                         </a>
                     </li>
+                    {% elif request.user.role and request.user.role.name == 'Elder' %}
+                    <li class="header pt-3 pb-3">
+                        <h4 class="text-green ms-3 ">Elders View </h4>
+                    </li>
+
+                    <li
+                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}">
+                        <a href="{% url 'admin_reports' %}" class="d-flex text-decoration-none text-dark">
+                            <i class="bi bi-circle-fill text-primary me-3"></i>
+                            <h5 class="text-black">Reports</h5>
+                        </a>
+                    </li>
+                    <li
+                        class="border-bottom list-group-item {% if request.resolver_match.url_name == 'activity_list' %}active{% endif %}">
+                        <a href="{% url 'activity_list' %}" class="d-flex text-decoration-none text-dark">
+                            <i class="bi bi-circle-fill text-primary me-3"></i>
+                            <h5 class="text-black">Activities</h5>
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
 
@@ -257,12 +273,14 @@
                         </div>
                         <div class="d-flex">
                             <ul class="navbar-nav">
+                                {% if request.user.role and request.user.role.name != 'Admin' and request.user.role.name != 'Elder' %}
                                 <li class="nav-item hidden-on-mobile">
                                     <a class="nav-link active" href="{% url 'report_list' %}"> My Reports</a>
                                 </li>
                                 <li class="nav-item hidden-on-mobile">
                                     <a class="nav-link" href="{% url 'score_card_list' %}">Score Cards</a>
                                 </li>
+                                {%endif%}
                                 <li class="nav-item">
                                     <a class="nav-link toggle-search" href="#"><i class="material-icons">search</i></a>
                                 </li>

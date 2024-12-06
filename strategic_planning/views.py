@@ -1,5 +1,5 @@
 from datetime import date, datetime 
-from django.db.models import Q, Sum 
+from django.db.models import Q, Sum, QuerySet 
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -50,8 +50,17 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         # Fetch logged-in user and designation
         user = self.request.user
-        current_designation = getattr(user, 'designation', None)
         role = user.role.name
+        designations = user.designation.all()
+        
+        if designations.exists():
+            if role == "Elder":
+                current_designation = user.designation.all()
+            else:
+                current_designation = user.designation.first()
+        else:
+            current_designation = None
+        
         # Initialize context
         context = super().get_context_data(**kwargs)
 
@@ -63,6 +72,8 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
         # Fetch activities for the current designation
         if role == "Admin":
             activities = Activity.objects.all()
+        elif isinstance(current_designation, QuerySet):
+            activities = Activity.objects.filter(designation__in=current_designation.values_list('id', flat=True))
         else:
             activities = Activity.objects.filter(designation=current_designation)
         # Calculate total planned budget and number of activities
@@ -84,6 +95,8 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
         # Fetch reported activities and actual spent for the current designation
         if role == "Admin":
             reports = Report.objects.all()
+        elif isinstance(current_designation, QuerySet):
+            reports = Report.objects.filter(designation__in=current_designation.values_list('id', flat=True))
         else:    
             reports = Report.objects.filter(designation=current_designation)
 
@@ -180,6 +193,12 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
                 start_date__quarter=current_quarter,
                 status=0
             ).order_by('start_date')[:5]
+        elif role == "Elder":
+            sub_activities = Activity.objects.filter(
+                start_date__year=current_year,
+                start_date__quarter=current_quarter,
+                status=0
+            ).order_by('start_date')[:5]
         else:
             sub_activities = Activity.objects.filter(
                 designation=current_designation,
@@ -187,7 +206,7 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
                 start_date__quarter=current_quarter,
                 status=0
             ).order_by('start_date')[:5]
-            
+             
         # Count activities by goal_score
         goal_score_counts = reported_activities_quarter.values('goal_score').annotate(count=Count('goal_score'))
         goal_score_data = {item['goal_score']: item['count'] for item in goal_score_counts}
@@ -536,6 +555,7 @@ class UserCreateView(CreateView):
         if user.password:  # Hash password before saving
             user.set_password(form.cleaned_data['password'])
         user.save()
+        form.save_m2m() 
         return super().form_valid(form)
 
 class UserUpdateView(UpdateView):
@@ -557,6 +577,7 @@ class UserUpdateView(UpdateView):
         if user.password:  # Hash password before saving
             user.set_password(form.cleaned_data['password'])
         user.save()
+        form.save_m2m()  # Save Many-to-Many relationships
         return super().form_valid(form)
 
 class LoginView(View):
@@ -622,7 +643,7 @@ class StrategicObjectivePlanningListView(ListView):
         return context
     
     def get_queryset(self):
-        user_designation = self.request.user.designation
+        user_designation = self.request.user.designation.first()
         theme_id = self.kwargs.get('theme_id')
         queryset = StrategicObjective.objects.filter(
         strategic_theme__id=theme_id,
@@ -732,7 +753,7 @@ class ActivityPlanningCreateView(CreateView):
         kpi_id = self.kwargs.get('kpi_id')
         main_activity_id = self.kwargs.get('main_activity_id')
         form.instance.kpi = get_object_or_404(KPI, id=kpi_id)
-        form.instance.designation = self.request.user.designation
+        form.instance.designation = self.request.user.designation.first()
         if main_activity_id:
             form.instance.main_activity = get_object_or_404(MainActivity, id=main_activity_id)
         
@@ -772,7 +793,7 @@ class MyActivitiesListView(ListView):
         """
         Customize the queryset to order and filter activities as needed.
         """
-        queryset = super().get_queryset().filter(designation=user.designation).select_related('main_activity', 'designation', 'kpi').order_by('name')
+        queryset = super().get_queryset().filter(designation=user.designation.first()).select_related('main_activity', 'designation', 'kpi').order_by('name')
         
         year = self.request.GET.get('year')
         month = self.request.GET.get('month')
@@ -846,7 +867,7 @@ class ReportListView(TemplateView):
         activities = Activity.objects.filter(
             status=1
         )
-        reports = Report.objects.filter(designation=self.request.user.designation)
+        reports = Report.objects.filter(designation=self.request.user.designation.first())
 
         # Create a mapping of activity IDs to their reports
         reports_by_activity = {report.activity_id: report for report in reports}
@@ -864,11 +885,11 @@ class ScoreCardListView(TemplateView):
         context = super().get_context_data(**kwargs)
         # Get activities and reports
         activities = Activity.objects.filter(
-            designation=self.request.user.designation,
+            designation=self.request.user.designation.first(),
             status=0
             )
         reports = Report.objects.filter(
-            designation=self.request.user.designation
+            designation=self.request.user.designation.first()
             )
         # Apply filters to activities
         activities = apply_filters(activities, self.request)
@@ -886,12 +907,12 @@ class ScoreCardListView(TemplateView):
 
     
 class ActivityReportView(TemplateView):
-    template_name = 'report_list.html'
+    template_name = 'reports.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['activities'] = Activity.objects.all()  # Fetch all activities
-        context['reports'] = Report.objects.filter(designation=self.request.user.designation)
+        context['reports'] = Report.objects.filter(designation=self.request.user.designation.first())
         context['form'] = ReportForm()
         return context
 
@@ -904,7 +925,7 @@ class SubmitReportView(View):
         report, created = Report.objects.get_or_create(
             user=request.user,
             activity=activity,
-            defaults={'designation': request.user.designation}
+            defaults={'designation': request.user.designation.first()}
         )
 
         if activity.status == 1:
@@ -914,7 +935,7 @@ class SubmitReportView(View):
         # Bind the form to the POST data
         form = ReportForm(request.POST, instance=report)
         if form.is_valid():
-            form.instance.designation = self.request.user.designation
+            form.instance.designation = self.request.user.designation.first()
             form.save()
             activity.status = 1
             activity.save()
@@ -946,7 +967,7 @@ class FullReportView(TemplateView):
         elif 10 <= current_month <= 12:
             quarter = "Fourth"
             
-        context["request"] = self.request.user.designation.name
+        context["request"] = self.request.user.designation.first().name
         context["user"] = self.request.user
         context["quarter"] = quarter
         # Fetch all themes
@@ -1031,7 +1052,7 @@ class DepartmentalReportView(TemplateView):
         user = self.request.user
         quarter = self.request.GET.get("report_period", "")
         year = self.request.GET.get("year", "")
-        department = user.designation.name
+        department = user.designation.first().name
         # Determine date range for the selected quarter
         start_date, end_date = self.get_date_range(year, quarter)
 
@@ -1097,7 +1118,7 @@ class DepartmentPlanView(TemplateView):
         user = self.request.user
         quarter = self.request.GET.get("report_period", "")
         year = self.request.GET.get("year", "")
-        department = user.designation.name
+        department = user.designation.first().name
         # Determine date range for the selected quarter
         start_date, end_date = self.get_date_range(year, quarter)
 
@@ -1111,7 +1132,7 @@ class DepartmentPlanView(TemplateView):
                     main_activities = kpi.main_activities.all()
                     for main_activity in main_activities:
                         activities = main_activity.activities.filter(
-                            designation=user.designation,
+                            designation=user.designation.first(),
                             start_date__gte=start_date,
                             start_date__lte=end_date
                         )
@@ -1164,7 +1185,7 @@ class AdminDepartmentalReportView(TemplateView):
         year = self.request.GET.get("year", "")
         designation_id = self.request.GET.get("designation_id", "")
         designation_name = self.request.GET.get("designation_name", "")
-
+        print(designation_id)
         # Determine date range for the selected quarter
         start_date, end_date = self.get_date_range(year, quarter)
         themes = StrategicTheme.objects.all()
@@ -1545,17 +1566,33 @@ class AdminChurchPlanView(TemplateView):
 #         return context
 
 
+
+
 class AdminReportsListView(ListView):
     model = Designation
     template_name = 'admin-reports.html'  # Update with actual template path
     context_object_name = 'departments'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Generate a range of years (e.g., last 10 years)
+        
+        # Get the currently logged-in user
+        user = self.request.user
+
+        # Check if the user's role is "Elder"
+        if user.role and user.role.name == "Elder":
+            # Fetch designations (departments) for the current user
+            context['departments'] = user.designation.all()
+        else:
+            # Default: all departments
+            context['departments'] = Designation.objects.all()
+
+        # Add a range of years (e.g., last 5 years)
         current_year = datetime.now().year
         context['years'] = range(current_year, current_year - 5, -1)
+
         return context
+
 class AdminPlansListView(ListView):
     model = Designation
     template_name = 'admin-plans.html'  # Update with actual template path
@@ -1563,9 +1600,22 @@ class AdminPlansListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Generate a range of years (e.g., last 10 years)
+        
+        # Get the currently logged-in user
+        user = self.request.user
+
+        # Check if the user's role is "Elder"
+        if user.role and user.role.name == "Elder":
+            # Fetch designations (departments) for the current user
+            context['departments'] = user.designation.all()
+        else:
+            # Default: all departments
+            context['departments'] = Designation.objects.all()
+
+        # Add a range of years (e.g., last 5 years)
         current_year = datetime.now().year
         context['years'] = range(current_year, current_year - 5, -1)
+
         return context
     
 class AdminReportListView(TemplateView):
@@ -1575,7 +1625,7 @@ class AdminReportListView(TemplateView):
         context = super().get_context_data(**kwargs)
         # Get activities and reports
         activities = Activity.objects.all()
-        reports = Report.objects.filter(designation=self.request.user.designation)
+        reports = Report.objects.filter(designation=self.request.user.designation.first())
 
         # Create a mapping of activity IDs to their reports
         reports_by_activity = {report.activity_id: report for report in reports}

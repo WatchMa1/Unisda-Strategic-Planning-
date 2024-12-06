@@ -58,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # Relationships
     role = models.ForeignKey("Role", on_delete=models.SET_NULL, null=True, related_name="users")
-    designation = models.ForeignKey("Designation", on_delete=models.SET_NULL, null=True, related_name="users")
+    designation = models.ManyToManyField(Designation, related_name="users")
 
     objects = CustomUserManager()
 
