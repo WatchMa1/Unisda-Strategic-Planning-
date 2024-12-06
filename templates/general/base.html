@@ -249,9 +249,7 @@
                                         <i class="material-icons">add</i>
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="addDropdownLink">
-                                        <li><a class="dropdown-item" href="#">New Workspace</a></li>
-                                        <li><a class="dropdown-item" href="#">New Board</a></li>
-                                        <li><a class="dropdown-item" href="#">Create Project</a></li>
+                                        <li><a class="dropdown-item" href="#">Add Activity</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -260,10 +258,10 @@
                         <div class="d-flex">
                             <ul class="navbar-nav">
                                 <li class="nav-item hidden-on-mobile">
-                                    <a class="nav-link active" href="#"> My Reports</a>
+                                    <a class="nav-link active" href="{% url 'report_list' %}"> My Reports</a>
                                 </li>
                                 <li class="nav-item hidden-on-mobile">
-                                    <a class="nav-link" href="#">Strategic Themes</a>
+                                    <a class="nav-link" href="{% url 'score_card_list' %}">Score Cards</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link toggle-search" href="#"><i class="material-icons">search</i></a>
