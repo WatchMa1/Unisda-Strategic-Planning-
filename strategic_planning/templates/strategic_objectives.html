@@ -44,7 +44,7 @@
 
                         <!-- Table Header for Designation -->
                         <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Designation</h5>
+                            <h5 class="text text-green">Departmants</h5>
                         </th>
                     </tr>
                 </thead>
@@ -69,8 +69,14 @@
                         </td>
 
                         <!-- Designation -->
-                        <td class="field-designation">
-                            {{ objective.designation.name }}
+                        <td class="field-designations">
+                            {% if objective.designation.exists %}
+                                {% for designation in objective.designation.all %}
+                                    <span class="badge badge-primary">{{ designation.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">No Departments</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}

@@ -8,14 +8,12 @@
             <div class="example-content bg-light">
                 <div class="section-description d-flex align-items-center">
                     <div class="section-description-content flex-grow-1">
-                        <h1 class="">Designation List</h1>
+                        <h1 class="">DePartments</h1>
                     </div>
                     <div class="section-description-actions">
-                        <a href="#" class="btn btn-dark">
-                            <i class="material-icons-outlined">file_download</i>Download
-                        </a>
+
                         <a href="{% url 'designation_create' %}" class="btn btn-green">
-                            <i class="material-icons">add</i>Create Designation
+                            <i class="material-icons">add</i>Create Department
                         </a>
                     </div>
                 </div>
@@ -38,13 +36,9 @@
 
                         <!-- Table Header for Designation Name -->
                         <th class="sorting text-green" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Designation Name</h5>
+                            <h5 class="text text-green">Department Name</h5>
                         </th>
 
-                        <!-- Table Header for Created By -->
-                        <th class="sorting" tabindex="0" rowspan="1" colspan="1">
-                            <h5 class="text text-green">Created By</h5>
-                        </th>
 
                         <!-- Table Header for Actions -->
                         <th class="sorting" tabindex="0" rowspan="1" colspan="1">
@@ -69,11 +63,7 @@
                             </a>
                         </th>
 
-                        <!-- Created By -->
-                        <td class="field-created-by">
-                            {{ designation.created_by }}
-                        </td>
-
+  
                         <!-- Actions -->
                         <td class="field-actions">
                             <a href="{% url 'designation_update' designation.id %}" class="btn btn-sm btn-warning">Edit</a>

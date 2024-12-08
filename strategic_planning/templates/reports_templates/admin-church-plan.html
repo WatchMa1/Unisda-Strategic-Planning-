@@ -24,6 +24,8 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: small;
+
         }
         @media print {
             body {
@@ -94,6 +96,7 @@
                     <tr>
                         <th>Strategic Theme</th>
                         <th>Strategic Objective</th>
+                        <th>Departmant</th>
                         <th>KPI</th>
                         <th>Main Activity</th>
                         <th>Sub-Activity</th>
@@ -107,6 +110,7 @@
                     <tr>
                         <td>{{ row.theme }}</td>
                         <td>{{ row.objective }}</td>
+                        <td>{{ row.department }}</td>
                         <td>{{ row.kpi }}</td>
                         <td>{{ row.main_activity }}</td>
                         <td>{{ row.activity }}</td>
