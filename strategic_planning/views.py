@@ -249,12 +249,12 @@ class HomeView(RoleAndDesignationRequiredMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         return render(request, self.template_name, context)
 
-class StrategicThemeListView(ListView):
+class StrategicThemeListView(RoleAndDesignationRequiredMixin, ListView):
     model = StrategicTheme
     template_name = 'strategic_themes.html'
     context_object_name = 'strategic_themes'
 
-class StrategicThemeCreateView(CreateView):
+class StrategicThemeCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = StrategicTheme
     form_class = StrategicThemeForm
     template_name = 'forms.html'
@@ -270,7 +270,7 @@ class StrategicThemeDetailView(DetailView):
     template_name = 'strategic_theme_detail.html'
     context_object_name = 'strategic_theme'
 
-class StrategicThemeUpdateView(UpdateView):
+class StrategicThemeUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = StrategicTheme
     form_class = StrategicThemeForm
     template_name = 'forms.html'  # Your form template
@@ -284,14 +284,16 @@ class StrategicThemeUpdateView(UpdateView):
         form.instance.created_by = self.request.user  # Set the logged-in user
         return super().form_valid(form)
 
-class StrategicThemeDeleteView(DeleteView):
+class StrategicThemeDeleteView(RoleAndDesignationRequiredMixin, DeleteView):
     model = StrategicTheme
     template_name = 'strategic_theme_confirm_delete.html'
     success_url = reverse_lazy('strategic_theme_list')
 
 #strategic objectives views 
-class StrategicObjectiveListView(ListView):
+class StrategicObjectiveListView(RoleAndDesignationRequiredMixin, ListView):
     model = StrategicObjective
+    
+    required_role = 'Admin'
     template_name = 'strategic_objectives.html'
     context_object_name = 'strategic_objectives'
 
@@ -318,7 +320,7 @@ class StrategicObjectiveCreateView(RoleAndDesignationRequiredMixin, CreateView):
         form.instance.created_by = self.request.user  # Set the logged-in user
         return super().form_valid(form)
 
-class StrategicObjectiveUpdateView(UpdateView):
+class StrategicObjectiveUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = StrategicObjective
     form_class = StrategicObjectiveForm
     template_name = 'forms.html'
@@ -345,7 +347,7 @@ class DesignationDeleteView(DeleteView):
     success_url = reverse_lazy('designation_list')
 
 #KPI Views
-class KPIListView(ListView):
+class KPIListView(RoleAndDesignationRequiredMixin, ListView):
     model = KPI
     template_name = 'kpi_list.html'
     context_object_name = 'kpis'
@@ -356,7 +358,7 @@ class KPIDetailView(DetailView):
     template_name = 'kpi_detail.html'
     context_object_name = 'kpi'
 
-class KPICreateView(CreateView):
+class KPICreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = KPI
     form_class = KPIForm
     template_name = 'forms.html'
@@ -372,7 +374,7 @@ class KPICreateView(CreateView):
         return super().form_valid(form)
 
 
-class KPIUpdateView(UpdateView):
+class KPIUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = KPI
     form_class = KPIForm
     template_name = 'forms.html'
@@ -391,7 +393,7 @@ class KPIDeleteView(DeleteView):
 
     
 # Activity Views
-class ActivityListView(ListView):
+class ActivityListView(RoleAndDesignationRequiredMixin, ListView):
     model = Activity
     template_name = 'activities.html'
     context_object_name = 'activities'
@@ -403,7 +405,7 @@ class ActivityDetailView(DetailView):
     context_object_name = 'activity'
 
 
-class ActivityCreateView(CreateView):
+class ActivityCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = Activity
     form_class = ActivityForm
     template_name = 'forms.html'
@@ -419,7 +421,7 @@ class ActivityCreateView(CreateView):
         return super().form_valid(form)
     
 
-class ActivityUpdateView(UpdateView):
+class ActivityUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = Activity
     form_class = ActivityForm
     template_name = 'forms.html'
@@ -441,7 +443,7 @@ class ActivityDeleteView(DeleteView):
 
 
     
-class DesignationListView(ListView):
+class DesignationListView(RoleAndDesignationRequiredMixin, ListView):
     model = Designation
     template_name = 'designations.html'
     context_object_name = 'designations'
@@ -453,7 +455,7 @@ class DesignationDetailView(DetailView):
     context_object_name = 'designation'
 
 
-class DesignationCreateView(CreateView):
+class DesignationCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = Designation
     form_class = DesignationForm
     template_name = 'forms.html'
@@ -465,7 +467,7 @@ class DesignationCreateView(CreateView):
         return context
 
 
-class DesignationUpdateView(UpdateView):
+class DesignationUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = Designation
     form_class = DesignationForm
     template_name = 'forms.html'
@@ -484,7 +486,7 @@ class ReportDetailView(DetailView):
 
 
 
-class ReportUpdateView(UpdateView):
+class ReportUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = Report
     form_class = ReportForm
     template_name = 'forms.html'
@@ -495,7 +497,7 @@ class ReportUpdateView(UpdateView):
         context['page_name'] = 'report_update'  # Set this for conditional rendering
         return context
 
-class RoleListView(ListView):
+class RoleListView(RoleAndDesignationRequiredMixin, ListView):
     model = Role
     template_name = 'roles.html'
     context_object_name = 'roles'
@@ -519,7 +521,7 @@ class RoleCreateView(RoleAndDesignationRequiredMixin, CreateView):
         context['page_name'] = 'role_create'  # Set this for conditional rendering
         return context
 
-class RoleUpdateView(UpdateView):
+class RoleUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = Role
     form_class = RoleForm
     template_name = 'forms.html'
@@ -530,13 +532,13 @@ class RoleUpdateView(UpdateView):
         context['page_name'] = 'role_update'  # Set this for conditional rendering
         return context
 
-class UserListView(ListView):
+class UserListView(RoleAndDesignationRequiredMixin, ListView):
     model = User
     template_name = 'users.html'
     context_object_name = 'users'  # Pass the users to the template
 
 
-class UserCreateView(CreateView):
+class UserCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = User
     form_class = UserForm
     template_name = 'forms.html'
@@ -558,7 +560,7 @@ class UserCreateView(CreateView):
         form.save_m2m() 
         return super().form_valid(form)
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = User
     form_class = UserForm
     template_name = 'forms.html'
@@ -618,7 +620,7 @@ def dashboard(request):
 
 # Planning Module
 
-class StrategicThemePlanningListView(ListView):
+class StrategicThemePlanningListView(RoleAndDesignationRequiredMixin, ListView):
     model = StrategicTheme
     template_name = 'general/base.html'  # Replace with your template name
     context_object_name = 'themes'
@@ -628,7 +630,7 @@ class StrategicThemePlanningListView(ListView):
         return StrategicTheme.objects.all()
 
 
-class StrategicObjectivePlanningListView(ListView):
+class StrategicObjectivePlanningListView(RoleAndDesignationRequiredMixin, ListView):
     model = StrategicObjective
     template_name = 'planning.html'  
         
@@ -652,7 +654,7 @@ class StrategicObjectivePlanningListView(ListView):
 
         return queryset
     
-class KPIPlanningListView(ListView):
+class KPIPlanningListView(RoleAndDesignationRequiredMixin, ListView):
     model = KPI
     template_name = 'planning.html'  # Replace with your template name
     context_object_name = 'kpis'
@@ -682,7 +684,7 @@ def main_activity_create(request, kpi_id):
 
     return render(request, 'full_template.html', {'form': form, 'kpi': kpi})
 
-class MainActivityCreateView(CreateView):
+class MainActivityCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = MainActivity
     form_class = MainActivityForm
     template_name = 'planning.html'
@@ -719,7 +721,7 @@ class MainActivityCreateView(CreateView):
                 'kpi_id': kpi_id
         })
     
-class MainActivityUpdateView(UpdateView):
+class MainActivityUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = MainActivity
     form_class = MainActivityForm
     template_name = 'planning.html'
@@ -729,7 +731,7 @@ class MainActivityUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['page_name'] = 'main_activity_update'  # Set this for conditional rendering
         return context
-class ActivityPlanningUpdateView(UpdateView):
+class ActivityPlanningUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = MainActivity
     form_class = MainActivityForm
     template_name = 'planning.html'
@@ -740,7 +742,7 @@ class ActivityPlanningUpdateView(UpdateView):
         context['page_name'] = 'sub_activity_update'  # Set this for conditional rendering
         return context
     
-class ActivityPlanningCreateView(CreateView):
+class ActivityPlanningCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = Activity
     form_class = ActivityForm
     template_name = 'planning.html'
@@ -782,7 +784,7 @@ class ActivityPlanningCreateView(CreateView):
                 'kpi_id': kpi_id
         })
             
-class MyActivitiesListView(ListView):
+class MyActivitiesListView(RoleAndDesignationRequiredMixin, ListView):
     model = Activity
     template_name = 'my-activities.html'
     context_object_name = 'activities'
@@ -818,11 +820,16 @@ class MyActivitiesListView(ListView):
         """
         Pass filter data back to the template for display.
         """
+        months = {
+            1: 'January', 2: 'February', 3: 'March', 4: 'April',
+            5: 'May', 6: 'June', 7: 'July', 8: 'August',
+            9: 'September', 10: 'October', 11: 'November', 12: 'December'
+        }
         current_year = datetime.now().year
         context['years'] = range(current_year, current_year - 5, -1)
         context['start_date'] = self.request.GET.get('start_date', '')
         context['end_date'] = self.request.GET.get('end_date', '')
-        context['months'] = range(1, 13)
+        context['months'] = months
         return context
     
     @staticmethod
@@ -895,13 +902,20 @@ class ScoreCardListView(TemplateView):
         activities = apply_filters(activities, self.request)
         # Create a mapping of activity IDs to their reports
         reports_by_activity = {report.activity_id: report for report in reports}
+        
+        months = {
+            1: 'January', 2: 'February', 3: 'March', 4: 'April',
+            5: 'May', 6: 'June', 7: 'July', 8: 'August',
+            9: 'September', 10: 'October', 11: 'November', 12: 'December'
+        }
+        
         # Pass activities, reports, and the form to the context
         context['activities'] = activities
         context['reports_by_activity'] = reports_by_activity  # Pre-filtered reports by activity ID
         context['form'] = ReportForm()
         current_year = datetime.now().year
         context['years'] = range(current_year, current_year - 5, -1)
-        context['months'] = range(1, 13)
+        context['months'] = months
         
         return context
 
@@ -911,8 +925,13 @@ class ActivityReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['activities'] = Activity.objects.all()  # Fetch all activities
-        context['reports'] = Report.objects.filter(designation=self.request.user.designation.first())
+        context['activities'] = Activity.objects.filter(
+            status=1
+            )  # Fetch all activities
+        context['reports'] = Report.objects.filter(
+            activity__status=1,
+            designation=self.request.user.designation.first()
+            )
         context['form'] = ReportForm()
         return context
 
@@ -947,6 +966,8 @@ class SubmitReportView(View):
         # Redirect back to the report list page
         return redirect('report_list') 
 
+
+# delete me ??????
 class FullReportView(TemplateView):
     template_name = "reports_templates/full-reports.html"  # The HTML template for the table
 
@@ -977,6 +998,7 @@ class FullReportView(TemplateView):
         data = []
         for theme in themes:
             objectives = theme.objectives.all()
+            department_name = objective.designation.name 
             for objective in objectives:
                 kpis = objective.kpis.all()
                 for kpi in kpis:
@@ -990,6 +1012,7 @@ class FullReportView(TemplateView):
                             data.append({
                                 "theme": theme.theme_name,
                                 "objective": objective.objective_name,
+                                "department" : department_name,
                                 "kpi": kpi.name,
                                 "main_activity": main_activity.name,
                                 "activity": activity.name,
@@ -1199,7 +1222,9 @@ class AdminDepartmentalReportView(TemplateView):
                 for kpi in kpis:
                     main_activities = kpi.main_activities.all()
                     for main_activity in main_activities:
-                        activities = main_activity.activities.all()
+                        activities = main_activity.activities.filter(
+                            designation=designation_id,
+                        )
                         for activity in activities:
                             # Fetch the report within the selected period
                             report = activity.reports.filter(
@@ -1277,6 +1302,7 @@ class AdminDepartmentalPlanView(TemplateView):
                         )
                             
                         for activity in activities:
+                            
                             if activities:
                                 data.append({
                                     "theme": theme.theme_name,
@@ -1328,13 +1354,17 @@ class AdminChurchReportView(TemplateView):
         for theme in themes:
             objectives = theme.objectives.all()
             for objective in objectives:
+               
+            
                 kpis = objective.kpis.all()
                 for kpi in kpis:
                     main_activities = kpi.main_activities.all()
                     for main_activity in main_activities:
                         activities = main_activity.activities.all()
                         for activity in activities:
-                            # Fetch the report within the selected period
+                             # Access the designation directly since it's a ForeignKey
+                            department_name = activity.designation.name if activity.designation else "No Department"
+                            
                             report = activity.reports.filter(
                                  report_date__range=(start_date, end_date)
                             ).first()
@@ -1344,6 +1374,7 @@ class AdminChurchReportView(TemplateView):
                                 data.append({
                                     "theme": theme.theme_name,
                                     "objective": objective.objective_name,
+                                    "department": department_name,
                                     "kpi": kpi.name,
                                     "main_activity": main_activity.name,
                                     "activity": activity.name,
@@ -1402,10 +1433,12 @@ class AdminChurchPlanView(TemplateView):
                         )
                             
                         for activity in activities:
+                            department_name = activity.designation.name if activity.designation else "None"
                             if activities:
                                 data.append({
                                     "theme": theme.theme_name,
                                     "objective": objective.objective_name,
+                                    "department": department_name,
                                     "kpi": kpi.name,
                                     "main_activity": main_activity.name,
                                     "activity": activity.name,
@@ -1568,7 +1601,7 @@ class AdminChurchPlanView(TemplateView):
 
 
 
-class AdminReportsListView(ListView):
+class AdminReportsListView(RoleAndDesignationRequiredMixin, ListView):
     model = Designation
     template_name = 'admin-reports.html'  # Update with actual template path
     context_object_name = 'departments'
@@ -1593,7 +1626,7 @@ class AdminReportsListView(ListView):
 
         return context
 
-class AdminPlansListView(ListView):
+class AdminPlansListView(RoleAndDesignationRequiredMixin, ListView):
     model = Designation
     template_name = 'admin-plans.html'  # Update with actual template path
     context_object_name = 'departments'

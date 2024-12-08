@@ -77,10 +77,16 @@
                             {{ user.role }}
                         </td>
 
-                        <!-- Last Name -->
-                        <td class="field-last-name">
-                            {{ user.designation }}
-                        </td>
+                    <!-- Designation -->
+                    <td class="field-designations">
+                        {% if user.designation.exists %}
+                            {% for designation in user.designation.all %}
+                                <span class="badge badge-primary">{{ designation.name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted">No Departments</span>
+                        {% endif %}
+                    </td>
 
                         <!-- Actions -->
                         <td class="field-actions">
