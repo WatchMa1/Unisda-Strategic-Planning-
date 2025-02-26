@@ -10,16 +10,29 @@
                     <div class="section-description-content flex-grow-1">
                         <h1 class="">User List</h1>
                     </div>
+                    
                     <div class="section-description-actions">
-          
+                        
                         <a href="{% url 'user_create' %}" class="btn btn-green">
                             <i class="material-icons">add</i>Create User
                         </a>
                     </div>
+
                 </div>
+                <!-- Search Form -->
+                <form method="GET" action="{% url 'user_list' %}" class="form-inline me-2  my-lg-0 d-flex justify-content-end">
+                    {% csrf_token %}
+                    <div class="input-group w-25">
+                        <input class="form-control " class="border-rounded-3" type="search" placeholder="Search" aria-label="Search" name="q" value="{{ request.GET.q }}">
+                        <div class="input-group-append">
+                            <button class="btn bg-light border-transparent d-none" type="submit">
+                                <i class="material-icons text-dark">search</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-
         <div class="table-responsive mt-5 p-0">
             <table id="result_list" class="table table-striped">
                 <thead>

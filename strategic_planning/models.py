@@ -48,7 +48,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     password = models.CharField(max_length=128)  # Still hashed
-    dob = models.DateField()
     contact = models.CharField(max_length=15)
     email = models.EmailField(unique=True)
     physical_address = models.TextField()

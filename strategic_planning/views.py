@@ -370,9 +370,17 @@ class KPICreateView(RoleAndDesignationRequiredMixin, CreateView):
         return context
     
     def form_valid(self, form):
-        form.instance.created_by = self.request.user  # Set the logged-in user
-        return super().form_valid(form)
-
+        # Handle multiple KPIs
+        kpi_names = self.request.POST.getlist('kpi_name')
+        strategic_objective = form.cleaned_data['strategic_objective']
+        for kpi_name in kpi_names:
+            if kpi_name.strip():  # Ensure the KPI name is not empty
+                KPI.objects.create(
+                    name=kpi_name,
+                    strategic_objective=strategic_objective,
+                    created_by=self.request.user
+                )
+        return redirect(self.success_url)
 
 class KPIUpdateView(RoleAndDesignationRequiredMixin, UpdateView):
     model = KPI
@@ -536,7 +544,18 @@ class UserListView(RoleAndDesignationRequiredMixin, ListView):
     model = User
     template_name = 'users.html'
     context_object_name = 'users'  # Pass the users to the template
-
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(email__icontains=query) |
+                Q(role__name__icontains=query) |
+                Q(designation__name__icontains=query)
+            ).distinct()
+        return queryset
 
 class UserCreateView(RoleAndDesignationRequiredMixin, CreateView):
     model = User
@@ -771,7 +790,7 @@ class ActivityPlanningCreateView(RoleAndDesignationRequiredMixin, CreateView):
         context['page_name'] = 'sub_activity_create'  # Set this for conditional rendering
         return context
     def get_success_url(self):
-        # Redirect to SubActivityCreate view after submitting
+        # Redirect to SubActivityList view after submitting        
         main_activity_id = self.kwargs.get('main_activity_id')
         kpi_id = self.kwargs.get('kpi_id')
         if self.object and main_activity_id:
@@ -872,10 +891,13 @@ class ReportListView(TemplateView):
         context = super().get_context_data(**kwargs)
         # Get activities and reports
         activities = Activity.objects.filter(
+            designation=self.request.user.designation.first(),
             status=1
         )
         reports = Report.objects.filter(designation=self.request.user.designation.first())
 
+        # Apply filters to activities
+        activities = apply_filters(activities, self.request)
         # Create a mapping of activity IDs to their reports
         reports_by_activity = {report.activity_id: report for report in reports}
 
@@ -926,6 +948,7 @@ class ActivityReportView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['activities'] = Activity.objects.filter(
+            designation=self.request.user.designation.first(),
             status=1
             )  # Fetch all activities
         context['reports'] = Report.objects.filter(
@@ -1016,6 +1039,8 @@ class FullReportView(TemplateView):
                                 "kpi": kpi.name,
                                 "main_activity": main_activity.name,
                                 "activity": activity.name,
+                                "start_date": activity.start_date,
+                                "end_date": activity.end_date,
                                 "status": report.goal_score if report else "No Report",
                                 "q1": "",  # Leave empty for now
                                 "report_details": report.report_details if report else "No details",
@@ -1103,7 +1128,8 @@ class DepartmentalReportView(TemplateView):
                                     "kpi": kpi.name,
                                     "main_activity": main_activity.name,
                                     "activity": activity.name,
-                                    "date": activity.start_date,
+                                    "start_date": activity.start_date,
+                                    "end_date": activity.end_date,
                                     "budget": activity.estimated_amount,
                                     "status": report.goal_score,
                                     "report_details": report.report_details,
@@ -1169,7 +1195,8 @@ class DepartmentPlanView(TemplateView):
                                     "kpi": kpi.name,
                                     "main_activity": main_activity.name,
                                     "activity": activity.name,
-                                    "date": activity.start_date,
+                                    "start_date": activity.start_date,
+                                    "end_date": activity.end_date,
                                     "budget": activity.estimated_amount,
                                     "details": activity.description,
                                 })
@@ -1239,7 +1266,8 @@ class AdminDepartmentalReportView(TemplateView):
                                     "kpi": kpi.name,
                                     "main_activity": main_activity.name,
                                     "activity": activity.name,
-                                    "date": activity.start_date,
+                                    "start_date": activity.start_date,
+                                    "end_date": activity.end_date,
                                     "budget": activity.estimated_amount,
                                     "status": report.goal_score,
                                     "report_details": report.report_details,
@@ -1379,7 +1407,8 @@ class AdminChurchReportView(TemplateView):
                                     "main_activity": main_activity.name,
                                     "activity": activity.name,
                                     "status": report.goal_score,
-                                    "date": report.report_date,
+                                    "start_date": activity.start_date,
+                                    "end_date": activity.end_date,
                                     "budget": report.actual_spent,
                                     "report_details": report.report_details,
                                 })
@@ -1442,7 +1471,8 @@ class AdminChurchPlanView(TemplateView):
                                     "kpi": kpi.name,
                                     "main_activity": main_activity.name,
                                     "activity": activity.name,
-                                    "date": activity.start_date,
+                                    "start_date": activity.start_date,
+                                    "end_date": activity.end_date,
                                     "budget": activity.estimated_amount,
                                     "details": activity.description,
                                 })             
@@ -1710,12 +1740,7 @@ def download_pdf(request):
     
     # Generate the PDF
     pdf_filename = "strategic_themes.pdf"
-    generate_pdf(data, pdf_filename)
     return FileResponse(open(pdf_filename, 'rb'), as_attachment=True, filename=pdf_filename)
-
-
-
-
 
 def apply_filters(queryset, request):
     year = request.GET.get('year')
