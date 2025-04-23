@@ -27,16 +27,11 @@ load_dotenv(os.path.join(BASE_DIR/".eVar", ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-# SECRETE_KEY = os.environ.get('SECRET_KEY')
 
-# DEBUG = os.environ.get('DEBUG')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-(asfcb0lz0#^w=19m45r(_7a@x-v^9oturg&g0zzu#piii-o08')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
-# ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-# ALLOWED_HOSTS += os.environ.get("ALLOWED_HOSTS", "").split()
-
-SECRET_KEY='django-insecure-(asfcb0lz0#^w=19m45r(_7a@x-v^9oturg&g0zzu#piii-o08'
-DEBUG = "False"
-ALLOWED_HOSTS=['*']
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,6 +48,7 @@ AUTH_USER_MODEL = 'strategic_planning.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise right after security middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Add this for better static file serving
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'unisda_strategic_plan.urls'
 
@@ -127,16 +126,18 @@ LOGIN_URL = 'user_login'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# Database configuration for Docker
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'WatchMa1$Stastrategic_planning_db',  
-#         'USER': 'WatchMa1',                    
-#         'PASSWORD': 'Kapz.kapz123',  
-#         'HOST': 'WatchMa1.mysql.pythonanywhere-services.com',  
-#         'PORT': '3306',                    
+#         'NAME': os.environ.get('DB_NAME', 'planning_db'),
+#         'USER': os.environ.get('DB_USER', 'root'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD', 'kapz.kapz123'),
+#         'HOST': os.environ.get('DB_HOST', 'db'),  # Use the service name defined in docker-compose
+#         'PORT': os.environ.get('DB_PORT', '3306'),
 #     }
 # }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -147,8 +148,6 @@ DATABASES = {
         'PORT': '3306',              # MySQL default port
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
