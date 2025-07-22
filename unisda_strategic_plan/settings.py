@@ -27,16 +27,11 @@ load_dotenv(os.path.join(BASE_DIR/".eVar", ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-# SECRETE_KEY = os.environ.get('SECRET_KEY')
 
-# DEBUG = os.environ.get('DEBUG')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-(asfcb0lz0#^w=19m45r(_7a@x-v^9oturg&g0zzu#piii-o08')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
-# ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-# ALLOWED_HOSTS += os.environ.get("ALLOWED_HOSTS", "").split()
-
-SECRET_KEY='django-insecure-(asfcb0lz0#^w=19m45r(_7a@x-v^9oturg&g0zzu#piii-o08'
-DEBUG = "False"
-ALLOWED_HOSTS=['*']
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,6 +48,7 @@ AUTH_USER_MODEL = 'strategic_planning.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise right after security middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Add this for better static file serving
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'unisda_strategic_plan.urls'
 
@@ -127,28 +126,32 @@ LOGIN_URL = 'user_login'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'WatchMa1$Stastrategic_planning_db',  
-#         'USER': 'WatchMa1',                    
-#         'PASSWORD': 'Kapz.kapz123',  
-#         'HOST': 'WatchMa1.mysql.pythonanywhere-services.com',  
-#         'PORT': '3306',                    
-#     }
-# }
+# Determine if we're running in Docker (either set by Docker Compose or check environment)
+#IN_DOCKER = os.environ.get('DOCKER_CONTAINER', False) == 'true'
+IN_DOCKER = os.environ.get('DOCKER_CONTAINER', 'false').lower() == 'true'
+
+# Database configuration with fallback support
+# Docker container configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'planning_db',       # Your MySQL database name
-        'USER': 'root',              # Your MySQL username
-        'PASSWORD': 'kapz.kapz123',  # Your MySQL password
-        'HOST': 'localhost',         # Database host, e.g., '127.0.0.1' or 'localhost'
-        'PORT': '3306',              # MySQL default port
+        'NAME': 'planning_db',
+        'USER': 'root',  # Changed from 'score' to 'root'
+        'PASSWORD': '5A55wi3D!',  # Your new root password
+        'HOST': 'score_db',
+        'PORT': '3306',
     }
 }
-
-
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'planning_db',       # Your MySQL database name
+#        'USER': 'root',              # Your MySQL username
+#        'PASSWORD': 'kapz.kapz123',  # Your MySQL password
+#        'HOST': 'localhost',         # Database host, e.g., '127.0.0.1' or 'localhost'
+#        'PORT': '3306',              # MySQL default port
+#    }
+#}
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
