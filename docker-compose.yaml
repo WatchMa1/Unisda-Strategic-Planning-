@@ -4,6 +4,7 @@ services:
   web:
     build:
       context: .
+      network: host
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
@@ -13,30 +14,28 @@ services:
       - ./eVar/.env
     depends_on:
       - score_db
-    networks:
-      - app_network
     environment:
       - DB_HOST=score_db
       - DOCKER_CONTAINER=true
 
   score_db:
-    image: mysql:5.7
+    image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: planning_db
       MYSQL_USER: score
-      MYSQL_PASSWORD: Un1sd4
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_PASSWORD: Uni1sd4
+      MYSQL_ROOT_PASSWORD: 5A55wi3D!
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - app_network
+   # restart: always # To ensusre Docker always starts up as machine boots
 
 networks:
   app_network:
     driver: bridge
-
 volumes:
   mysql_data:
   static_volume:
