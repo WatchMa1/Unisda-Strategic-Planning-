@@ -126,32 +126,28 @@ LOGIN_URL = 'user_login'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Determine if we're running in Docker (either set by Docker Compose or check environment)
-#IN_DOCKER = os.environ.get('DOCKER_CONTAINER', False) == 'true'
-IN_DOCKER = os.environ.get('DOCKER_CONTAINER', 'false').lower() == 'true'
+# Database configuration for Docker
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.environ.get('DB_NAME', 'planning_db'),
+#         'USER': os.environ.get('DB_USER', 'root'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD', 'kapz.kapz123'),
+#         'HOST': os.environ.get('DB_HOST', 'db'),  # Use the service name defined in docker-compose
+#         'PORT': os.environ.get('DB_PORT', '3306'),
+#     }
+# }
 
-# Database configuration with fallback support
-# Docker container configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'planning_db',
-        'USER': 'root',  # Changed from 'score' to 'root'
-        'PASSWORD': '5A55wi3D!',  # Your new root password
-        'HOST': 'score_db',
-        'PORT': '3306',
+        'NAME': 'planning_db',       # Your MySQL database name
+        'USER': 'root',              # Your MySQL username
+        'PASSWORD': 'kapz.kapz123',  # Your MySQL password
+        'HOST': 'localhost',         # Database host, e.g., '127.0.0.1' or 'localhost'
+        'PORT': '3306',              # MySQL default port
     }
 }
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'planning_db',       # Your MySQL database name
-#        'USER': 'root',              # Your MySQL username
-#        'PASSWORD': 'kapz.kapz123',  # Your MySQL password
-#        'HOST': 'localhost',         # Database host, e.g., '127.0.0.1' or 'localhost'
-#        'PORT': '3306',              # MySQL default port
-#    }
-#}
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
