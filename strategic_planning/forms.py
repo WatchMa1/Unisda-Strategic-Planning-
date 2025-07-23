@@ -44,11 +44,16 @@ class StrategicObjectiveForm(forms.ModelForm):
 class KPIForm(forms.ModelForm):
     class Meta:
         model = KPI
-        fields = ['strategic_objective']
+        fields = ['name','strategic_objective']
         labels = {
+            'name': 'KPI Name',
             'strategic_objective': 'Strategic Objective',
         }
         widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter KPI name',
+            }),
             'strategic_objective': forms.Select(attrs={'class': 'form-control'}),
         }
 
