@@ -72,8 +72,8 @@ urlpatterns = [
     # Planning Views
     path('main-activity/create/<int:kpi_id>/', MainActivityCreateView.as_view(), name='main_activity_create'),
     path('main-activity/update/', MainActivityUpdateView.as_view(), name='main_activity_update'),
-    path('sub-activity/create//<int:kpi_id>/<int:main_activity_id>/', ActivityPlanningCreateView.as_view(), name='sub_activity_create'),
-    path('sub-activity/create//<int:kpi_id>/', ActivityPlanningCreateView.as_view(), name='sub_activity_create_without_main'),
+    path('sub-activity/create/<int:kpi_id>/<int:main_activity_id>/', ActivityPlanningCreateView.as_view(), name='sub_activity_create'),
+    path('sub-activity/create/<int:kpi_id>/', ActivityPlanningCreateView.as_view(), name='sub_activity_create_without_main'),
     path('sub-activity/update/', ActivityPlanningUpdateView.as_view(), name='sub_activity_update'),
     
     path('themes/', StrategicThemePlanningListView.as_view(), name='theme_planning_list'),

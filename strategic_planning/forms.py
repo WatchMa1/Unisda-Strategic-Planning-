@@ -44,23 +44,18 @@ class StrategicObjectiveForm(forms.ModelForm):
 class KPIForm(forms.ModelForm):
     class Meta:
         model = KPI
-        fields = ['name', 'strategic_objective']
-        widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter KPI Name'
-            }),
-            'strategic_objective': forms.Select(attrs={
-                'class': 'form-control',
-            }),
-
-        }
+        fields = ['name','strategic_objective']
         labels = {
             'name': 'KPI Name',
             'strategic_objective': 'Strategic Objective',
-            
         }
-
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter KPI name',
+            }),
+            'strategic_objective': forms.Select(attrs={'class': 'form-control'}),
+        }
 
 class MainActivityForm(forms.ModelForm):
     class Meta:
@@ -163,13 +158,12 @@ class ReportForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields =  ['first_name', 'last_name', 'password', 'dob', 'contact', 'email', 'physical_address', 'role', 'designation', 'is_active']
+        fields =  ['first_name', 'last_name', 'password', 'contact', 'email', 'physical_address', 'role', 'designation', 'is_active']
         
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter first name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter last name'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'}),
-            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'contact': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter contact number'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter email address'}),
             'physical_address': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter address', 'rows': 3}),
@@ -182,7 +176,6 @@ class UserForm(forms.ModelForm):
             'first_name': 'First Name',
             'last_name': 'Last Name',
             'password': 'Password',
-            'dob': 'Date of Birth',
             'contact': 'Contact Number',
             'email': 'Email Address',
             'physical_address': 'Physical Address',
@@ -190,6 +183,10 @@ class UserForm(forms.ModelForm):
             'designation': 'Designation',
             'is_active': 'Active Status',
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['designation'].queryset = Designation.objects.all().order_by('name')
 
     def save(self, commit=True):
         """

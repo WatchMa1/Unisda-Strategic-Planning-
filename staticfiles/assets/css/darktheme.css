@@ -651,8 +651,9 @@ table.dataTable td, table.dataTable th {
 .app-menu>ul>li.open>a>i:not(.has-sub-menu).material-icons-two-tone, 
 .app-menu>ul>li.active-page>a>i:not(.has-sub-menu).material-icons-two-tone,
 .menu-hover .app-menu>ul>li:hover>a>i:not(.has-sub-menu).material-icons-two-tone  {
-    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(85deg) brightness(103%) contrast(102%)!important;
-}
+   /* filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(85deg) brightness(103%) contrast(102%)!important;
+*/
+   }
 
 .badge.badge-secondary.badge-style-bordered {
     border-color: #9a9cab!important;

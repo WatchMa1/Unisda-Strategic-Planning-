@@ -137,15 +137,9 @@ body {
 /* Menu */
 
 .horizontal-menu .app-menu {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    right: 0;
-    height: 55px!important;
-    padding: 0;
+
     background-color: #fff;
-    z-index: 10008;
-    border-bottom: 1px solid #E2E6E9;
+
 }
 
 .horizontal-menu .app-menu .menu-list > li {
