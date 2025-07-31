@@ -72,9 +72,28 @@
                                         </div>
                                     </form>
                                 </div>
-                             
-                            </div>
-                           
+                                {% if report %}   
+                                    <div class="mt-3">
+                                        <h5 class="text-green fw-bold">Report Summary</h5>
+                                        <button id="summarize-btn" class="btn btn-success mb-2">Summarize Report</button>
+                                        <div id="summary-result" class="border p-2"></div>
+                                        <script>
+                                        document.getElementById('summarize-btn').onclick = async function() {
+                                            document.getElementById('summary-result').innerText = "Summarizing...";
+                                            let response = await fetch("{% url 'summarize_report' report_id %}", {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRFToken': '{{ csrf_token }}'
+                                                },
+                                                body: JSON.stringify({ text: `{{ report_text|escapejs }}` })
+                                            });
+                                            let data = await response.json();
+                                            document.getElementById('summary-result').innerText = data.summary || data.error;
+                                        };
+                                        </script>                        
+                                    </div>
+                                {% endif %}
                         </div>
                     </div>
                 </div>

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'strategic_planning',
+    'report_summarizer',
 ]
 AUTH_USER_MODEL = 'strategic_planning.User'
 
